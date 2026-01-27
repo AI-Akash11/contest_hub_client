@@ -4,7 +4,7 @@ const Card = () => {
   return (
     <Link
       to={`/plant/1`}
-      className='col-span-1 cursor-pointer group shadow-xl p-3 rounded-xl'
+      className='col-span-1 cursor-pointer group shadow-xl p-3 rounded-xl bg-base-100'
     >
       <div className='flex flex-col gap-2 w-full'>
         <div
