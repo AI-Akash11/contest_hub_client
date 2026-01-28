@@ -4,27 +4,43 @@ import { Link } from "react-router";
 
 const ErrorPage = () => {
   return (
-    <div className="min-h-screen bg-base-100 from-blue-50 to-blue-100 center">
-      <Link
-        to={"/"}
-        className=" flex items-center justify-start secondary underline pt-2 pl-2"
-      >
-        <BsArrowLeft />
-        Home
-      </Link>
-      <div className="flex flex-col items-center justify-center min-h-[95vh] px-6">
+    <div className="min-h-screen bg-base-200 flex flex-col">
+      {/* Top Back Button */}
+      <div className="p-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-primary font-semibold hover:underline"
+        >
+          <BsArrowLeft />
+          Back to Home
+        </Link>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <img
           src="https://i.ibb.co.com/0ythqdy3/error-404.png"
           alt="404 Error"
-          className="w-72 md:w-96 mb-8"
+          className="w-72 md:w-96 mb-8 drop-shadow-lg"
         />
-        <h1 className="text-5xl font-extrabold primary mb-4">
-          Oops! An Error Occured
+
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+          <span className="bg-gradient-to-r from-error to-warning bg-clip-text text-transparent">
+            Oops! Page Not Found
+          </span>
         </h1>
-        <p className="gray-600 mb-8 max-w-md">
-          Looks like the page you’re trying to visit doesn’t exist or has been
-          moved.
+
+        <p className="text-base-content/70 mb-8 max-w-md">
+          The page you’re looking for doesn’t exist, might have been removed, or
+          is temporarily unavailable.
         </p>
+
+        <Link
+          to="/"
+          className="btn btn-primary rounded-full px-8"
+        >
+          Go Home
+        </Link>
       </div>
     </div>
   );

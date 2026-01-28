@@ -76,3 +76,10 @@ h6 {
 .gradient-text {
   @apply bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
 }
+
+a.active{
+  color: #f59e0b;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}

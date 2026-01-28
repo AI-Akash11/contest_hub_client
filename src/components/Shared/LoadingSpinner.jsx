@@ -1,17 +1,25 @@
-import { ScaleLoader } from 'react-spinners'
+import { ClipLoader } from "react-spinners";
 
-const LoadingSpinner = ({ smallHeight }) => {
+const LoadingSpinner = ({
+  fullScreen = true,
+  message = "Loading Contest Hub...",
+  size = 50,
+}) => {
   return (
     <div
-      className={` ${smallHeight ? 'h-[250px]' : 'h-[70vh]'}
-      flex 
-      flex-col 
-      justify-center 
-      items-center `}
+      className={`flex flex-col items-center justify-center gap-4 ${
+        fullScreen ? "min-h-screen" : "py-12"
+      }`}
     >
-      <ScaleLoader size={100} color='yellow' />
-    </div>
-  )
-}
+      <ClipLoader
+        size={size}
+        color="var(--color-primary)"
+        aria-label="Loading"
+      />
 
-export default LoadingSpinner
+      <p className="sm font-medium base-content opacity-80">{message}</p>
+    </div>
+  );
+};
+
+export default LoadingSpinner;

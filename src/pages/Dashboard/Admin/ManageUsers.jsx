@@ -1,4 +1,3 @@
-import UserDataRow from "../../../components/Dashboard/TableRows/UserDataRow";
 
 const ManageUsers = () => {
   return (
@@ -38,7 +37,7 @@ const ManageUsers = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <UserDataRow />
+
                 </tbody>
               </table>
             </div>

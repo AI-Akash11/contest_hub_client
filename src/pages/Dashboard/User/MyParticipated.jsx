@@ -1,6 +1,5 @@
-import SellerOrderDataRow from "../../../components/Dashboard/TableRows/SellerOrderDataRow";
 
-const ManageOrders = () => {
+const MyParticipated = () => {
   return (
     <>
       <div className="container mx-auto px-4 sm:px-8">
@@ -14,13 +13,19 @@ const ManageOrders = () => {
                       scope="col"
                       className="px-5 py-3 bg-base-100  border-b border-gray-200 text-base-content/90  text-left text-sm uppercase font-normal"
                     >
+                      Image
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-5 py-3 bg-base-100  border-b border-gray-200 text-base-content/90  text-left text-sm uppercase font-normal"
+                    >
                       Name
                     </th>
                     <th
                       scope="col"
                       className="px-5 py-3 bg-base-100  border-b border-gray-200 text-base-content/90  text-left text-sm uppercase font-normal"
                     >
-                      Customer
+                      Category
                     </th>
                     <th
                       scope="col"
@@ -38,12 +43,6 @@ const ManageOrders = () => {
                       scope="col"
                       className="px-5 py-3 bg-base-100  border-b border-gray-200 text-base-content/90  text-left text-sm uppercase font-normal"
                     >
-                      Address
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-5 py-3 bg-base-100  border-b border-gray-200 text-base-content/90  text-left text-sm uppercase font-normal"
-                    >
                       Status
                     </th>
 
@@ -56,7 +55,6 @@ const ManageOrders = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <SellerOrderDataRow />
                 </tbody>
               </table>
             </div>
@@ -67,4 +65,4 @@ const ManageOrders = () => {
   );
 };
 
-export default ManageOrders;
+export default MyParticipated;
