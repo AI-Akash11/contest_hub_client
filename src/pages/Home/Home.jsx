@@ -1,8 +1,15 @@
+import Banner from "../../components/Home/Banner"
+import FeaturesSection from "../../components/Home/FeaturesSection"
+import PopularContests from "../../components/Home/PopularContests"
+import RecentWinners from "../../components/Home/RecentWinners"
 
 const Home = () => {
   return (
     <div>
-      Home
+      <Banner></Banner>
+      <PopularContests></PopularContests>
+      <RecentWinners></RecentWinners>
+      <FeaturesSection></FeaturesSection>
     </div>
   )
 }

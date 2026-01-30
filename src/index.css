@@ -16,7 +16,6 @@
   --color-secondary: #6366f1; /* indigo */
   --color-accent: #10b981; /* emerald */
   --color-neutral: #0f172a;
-  --color-inverse: #ffffff;
 
   --color-base-100: #020617; /* background */
   --color-base-200: #0f172a; /* card */
@@ -42,7 +41,6 @@
   --color-secondary: #6366f1;
   --color-accent: #10b981;
   --color-neutral: #f8fafc;
-  --color-inverse: #020617;
 
   --color-base-100: #ffffff;
   --color-base-200: #f1f5f9;

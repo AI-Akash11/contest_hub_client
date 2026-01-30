@@ -30,8 +30,8 @@ const Navbar = () => {
   );
 
   return (
-    <div className="fixed w-full bg-base-100 z-10 shadow-sm">
-      <div className="py-4 ">
+    <div className="fixed w-full bg-base-300 z-10 shadow-sm border-b border-white/10 rounded-b-2xl">
+      <div className="py-1 ">
         <Container>
           <div className="navbar">
             <div className="navbar-start">
@@ -71,7 +71,7 @@ const Navbar = () => {
                 <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-amber-400 flex items-center justify-center">
                   <span className="text-xl font-black text-base-100">C</span>
                 </div>
-                <span className="text-xl font-heading font-bold gradient-text hidden md:block">
+                <span className="text-xl font-bold gradient-text hidden md:block">
                   ContestHub
                 </span>
               </Link>
