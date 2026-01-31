@@ -51,7 +51,7 @@ const FeaturesSection = () => {
 
   return (
     <Container>
-      <section className="bg-card py-5 md:py-10 lg:py-20">
+      <section className="my-5 md:my-10 lg:my-20">
           {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
