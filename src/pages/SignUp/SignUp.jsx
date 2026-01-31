@@ -47,32 +47,6 @@ const SignUp = () => {
     }
   };
 
-  // form submit handler
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   const form = event.target;
-  //   const name = form.name.value;
-  //   const email = form.email.value;
-  //   const password = form.password.value;
-
-  //   try {
-  //     //2. User Registration
-  //     const result = await createUser(email, password);
-
-  //     //3. Save username & profile photo
-  //     await updateUserProfile(
-  //       name,
-  //       "https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c",
-  //     );
-  //     console.log(result);
-
-  //     navigate(from, { replace: true });
-  //     toast.success("Signup Successful");
-  //   } catch (err) {
-  //     console.log(err);
-  //     toast.error(err?.message);
-  //   }
-  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
@@ -83,9 +57,7 @@ const SignUp = () => {
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          noValidate=""
-          action=""
-          className="space-y-6 ng-untouched ng-pristine ng-valid"
+          className="space-y-6"
         >
           <div className="space-y-4">
             {/* Name */}
@@ -210,6 +182,7 @@ const SignUp = () => {
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="bg-primary w-full rounded-md py-3 text-white"
             >
               {loading ? (

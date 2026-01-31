@@ -1,25 +1,26 @@
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import useAuth from "../../hooks/useAuth";
 import { TbFidgetSpinner } from "react-icons/tb";
 import SocialLogin from "../../components/Shared/SocialLogin/SocialLogin";
+import { useForm } from "react-hook-form";
 
 const Login = () => {
   const { signIn, loading, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state || "/";
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   if (user) return <Navigate to={from} replace={true} />;
 
   // form submit handler
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const email = form.email.value;
-    const password = form.password.value;
+  const onSubmit = async (data) => {
+    const { email, password } = data;
 
     try {
       //User Login
@@ -43,26 +44,35 @@ const Login = () => {
           </p>
         </div>
         <form
-          onSubmit={handleSubmit}
-          noValidate=""
-          action=""
-          className="space-y-6 ng-untouched ng-pristine ng-valid"
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6"
         >
           <div className="space-y-4">
+            {/* email */}
             <div>
               <label htmlFor="email" className="block mb-2 text-sm">
                 Email address
               </label>
               <input
                 type="email"
-                name="email"
-                id="email"
-                required
                 placeholder="Enter Your Email Here"
                 className="w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-primary bg-base-300 text-base-content"
                 data-temp-mail-org="0"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
               />
             </div>
+            {errors.email && (
+              <p className="text-red-400 text-sm mt-1 ml-1">
+                {errors.email.message}
+              </p>
+            )}
+            {/* password */}
             <div>
               <div className="flex justify-between">
                 <label htmlFor="password" className="text-sm mb-2">
@@ -71,19 +81,25 @@ const Login = () => {
               </div>
               <input
                 type="password"
-                name="password"
                 autoComplete="current-password"
-                id="password"
-                required
                 placeholder="*******"
                 className="w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-primary bg-base-300 text-base-content"
+                {...register("password", {
+                  required: "password is required",
+                })}
               />
             </div>
+            {errors.password && (
+              <p className="text-red-400 text-sm mt-1 ml-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="bg-primary w-full rounded-md py-3 text-white"
             >
               {loading ? (
