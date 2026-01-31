@@ -25,7 +25,7 @@ const ErrorPage = () => {
         />
 
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-          <span className="bg-gradient-to-r from-error to-warning bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-error to-warning bg-clip-text text-transparent">
             Oops! Page Not Found
           </span>
         </h1>

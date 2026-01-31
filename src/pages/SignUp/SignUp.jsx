@@ -1,32 +1,41 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
-import { toast } from "react-hot-toast";
 import { TbFidgetSpinner } from "react-icons/tb";
+import { useForm } from "react-hook-form";
+import SocialLogin from "../../components/Shared/SocialLogin/SocialLogin";
+import { imageUpload } from "../../utils";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
-  const { createUser, updateUserProfile, signInWithGoogle, loading } =
-    useAuth();
+  const { createUser, updateUserProfile, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state || "/";
 
-  // form submit handler
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const password = form.password.value;
+  // React hook form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    const { name, image, email, password } = data;
+
+    const imageFile = image[0];
+
 
     try {
+
+      const imageURL = await imageUpload(imageFile);
+
       //2. User Registration
       const result = await createUser(email, password);
 
       //3. Save username & profile photo
       await updateUserProfile(
         name,
-        "https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c",
+        imageURL
       );
       console.log(result);
 
@@ -38,19 +47,33 @@ const SignUp = () => {
     }
   };
 
-  // Handle Google Signin
-  const handleGoogleSignIn = async () => {
-    try {
-      //User Registration using google
-      await signInWithGoogle();
+  // form submit handler
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   const form = event.target;
+  //   const name = form.name.value;
+  //   const email = form.email.value;
+  //   const password = form.password.value;
 
-      navigate(from, { replace: true });
-      toast.success("Signup Successful");
-    } catch (err) {
-      console.log(err);
-      toast.error(err?.message);
-    }
-  };
+  //   try {
+  //     //2. User Registration
+  //     const result = await createUser(email, password);
+
+  //     //3. Save username & profile photo
+  //     await updateUserProfile(
+  //       name,
+  //       "https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c",
+  //     );
+  //     console.log(result);
+
+  //     navigate(from, { replace: true });
+  //     toast.success("Signup Successful");
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error(err?.message);
+  //   }
+  // };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
       <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-base-200 text-base-content">
@@ -59,25 +82,40 @@ const SignUp = () => {
           <p className="text-sm text-base-content/50">Welcome to PlantNet</p>
         </div>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate=""
           action=""
           className="space-y-6 ng-untouched ng-pristine ng-valid"
         >
           <div className="space-y-4">
+            {/* Name */}
             <div>
               <label htmlFor="email" className="block mb-2 text-sm">
                 Name
               </label>
               <input
                 type="text"
-                name="name"
-                id="name"
                 placeholder="Enter Your Name Here"
                 className="w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-primary bg-base-300 text-base-content"
                 data-temp-mail-org="0"
+                {...register("name", {
+                  required: "Name is required",
+                  minLength: {
+                    value: 3,
+                    message: "Name must be at least 3 characters",
+                  },
+                  pattern: {
+                    value: /^[A-Za-z\s]+$/,
+                    message: "Name can only contain letters",
+                  },
+                })}
               />
             </div>
+            {errors.name && (
+              <p className="text-red-400 text-sm mt-1 ml-1">
+                {errors.name.message}
+              </p>
+            )}
             {/* Image */}
             <div>
               <label
@@ -87,9 +125,7 @@ const SignUp = () => {
                 Profile Image
               </label>
               <input
-                name="image"
                 type="file"
-                id="image"
                 accept="image/*"
                 className="block w-full text-sm text-base-content/60
       file:mr-4 file:py-2 file:px-4
@@ -100,25 +136,44 @@ const SignUp = () => {
       bg-base-300 border border-dashed border-primary/40 rounded-md cursor-pointer
       focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50
       py-2"
+                {...register("image", {
+                  required: "Profile image is required",
+                })}
               />
               <p className="mt-1 text-xs text-base-content/50">
                 PNG, JPG or JPEG (max 2MB)
               </p>
             </div>
+            {errors.image && (
+              <p className="text-red-400 text-sm mt-1 ml-1">
+                {errors.image.message}
+              </p>
+            )}
+            {/* Email */}
             <div>
               <label htmlFor="email" className="block mb-2 text-sm">
                 Email address
               </label>
               <input
                 type="email"
-                name="email"
-                id="email"
-                required
                 placeholder="Enter Your Email Here"
                 className="w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-primary bg-base-300 text-base-content"
                 data-temp-mail-org="0"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
               />
             </div>
+            {errors.email && (
+              <p className="text-red-400 text-sm mt-1 ml-1">
+                {errors.email.message}
+              </p>
+            )}
+            {/* password */}
             <div>
               <div className="flex justify-between">
                 <label htmlFor="password" className="text-sm mb-2">
@@ -127,14 +182,29 @@ const SignUp = () => {
               </div>
               <input
                 type="password"
-                name="password"
                 autoComplete="new-password"
-                id="password"
-                required
                 placeholder="*******"
                 className="w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-primary bg-base-300 text-base-content"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters long",
+                  },
+                  pattern: {
+                    value:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/,
+                    message:
+                      "Password must include uppercase, lowercase, number, and special character",
+                  },
+                })}
               />
             </div>
+            {errors.password && (
+              <p className="text-red-400 text-sm mt-1 ml-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -157,14 +227,7 @@ const SignUp = () => {
           </p>
           <div className="flex-1 h-px sm:w-16 dark:bg-base-300"></div>
         </div>
-        <div
-          onClick={handleGoogleSignIn}
-          className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer"
-        >
-          <FcGoogle size={32} />
-
-          <p>Continue with Google</p>
-        </div>
+        <SocialLogin></SocialLogin>
         <p className="px-6 text-sm text-center text-base-content/50">
           Already have an account?{" "}
           <Link

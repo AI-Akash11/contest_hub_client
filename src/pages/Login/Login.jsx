@@ -2,17 +2,16 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import useAuth from "../../hooks/useAuth";
-import { FcGoogle } from "react-icons/fc";
 import { TbFidgetSpinner } from "react-icons/tb";
+import SocialLogin from "../../components/Shared/SocialLogin/SocialLogin";
 
 const Login = () => {
-  const { signIn, signInWithGoogle, loading, user, setLoading } = useAuth();
+  const { signIn, loading, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state || "/";
 
-  if (loading) return <LoadingSpinner />;
   if (user) return <Navigate to={from} replace={true} />;
 
   // form submit handler
@@ -34,19 +33,6 @@ const Login = () => {
     }
   };
 
-  // Handle Google Signin
-  const handleGoogleSignIn = async () => {
-    try {
-      //User Registration using google
-      await signInWithGoogle();
-      navigate(from, { replace: true });
-      toast.success("Login Successful");
-    } catch (err) {
-      console.log(err);
-      setLoading(false);
-      toast.error(err?.message);
-    }
-  };
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
       <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-base-200 text-base-content">
@@ -120,14 +106,7 @@ const Login = () => {
           </p>
           <div className="flex-1 h-px sm:w-16 dark:bg-base-300"></div>
         </div>
-        <div
-          onClick={handleGoogleSignIn}
-          className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer"
-        >
-          <FcGoogle size={32} />
-
-          <p>Continue with Google</p>
-        </div>
+        <SocialLogin></SocialLogin>
         <p className="px-6 text-sm text-center text-base-content/50">
           Don&apos;t have an account yet?{" "}
           <Link
