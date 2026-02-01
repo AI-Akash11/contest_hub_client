@@ -1,9 +1,8 @@
-import { Link } from 'react-router';
-import { motion } from 'framer-motion';
-import { FiUsers, FiDollarSign, FiClock, FiArrowRight } from 'react-icons/fi';
+import { Link } from "react-router";
+import { motion } from "framer-motion";
+import { FiUsers, FiDollarSign, FiClock, FiArrowRight } from "react-icons/fi";
 
 const ContestCard = () => {
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -19,7 +18,7 @@ const ContestCard = () => {
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-100/80 via-transparent to-transparent" />
-        
+
         {/* Contest Type Badge */}
         <div className="absolute top-3 left-3">
           <span className="px-3 py-1 text-xs font-semibold bg-primary text-base-100 rounded-full">
@@ -28,12 +27,11 @@ const ContestCard = () => {
         </div>
 
         {/* Winner Badge */}
-          <div className="absolute top-3 right-3">
-            <span className="px-3 py-1 text-xs font-semibold bg-accent text-base-content rounded-full">
-              Winner Declared
-            </span>
-          </div>
-
+        <div className="absolute top-3 right-3">
+          <span className="px-3 py-1 text-xs font-semibold bg-accent text-base-content rounded-full">
+            Winner Declared
+          </span>
+        </div>
 
         {/* Prize Money */}
         <div className="absolute bottom-3 right-3">
@@ -47,11 +45,12 @@ const ContestCard = () => {
       {/* Content */}
       <div className="p-5">
         <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-            Contest Title
+          Contest Title
         </h3>
-        
+
         <p className="text-base-content/70 text-sm mb-4 line-clamp-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. In porro beatae itaque quis natus explicabo quo nemo dicta suscipit libero?
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. In porro
+          beatae itaque quis natus explicabo quo nemo dicta suscipit libero?
         </p>
 
         {/* Stats */}
@@ -62,7 +61,7 @@ const ContestCard = () => {
           </div>
           <div className="flex items-center gap-1">
             <FiClock className="w-4 h-4" />
-                Ended
+            Ended
           </div>
         </div>
 
