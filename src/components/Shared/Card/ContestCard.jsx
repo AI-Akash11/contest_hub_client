@@ -1,8 +1,12 @@
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { FiUsers, FiDollarSign, FiClock, FiArrowRight } from "react-icons/fi";
+import { getContestStatus } from "../../../utils";
+import NotFound from "../NotFound/NotFound";
 
-const ContestCard = () => {
+const ContestCard = ({ contest }) => {
+  const {name, image, contestType, _id, participantCount, description, prizeMoney, deadline} = contest || {};
+  const contestStatus = getContestStatus(deadline);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -13,8 +17,8 @@ const ContestCard = () => {
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src="https://i.ibb.co.com/1f0k26yn/bfbe84ae883bd1b72308a9d510d8a3f2.jpg"
-          alt="contest image"
+          src={image}
+          alt={name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-100/80 via-transparent to-transparent" />
@@ -22,7 +26,7 @@ const ContestCard = () => {
         {/* Contest Type Badge */}
         <div className="absolute top-3 left-3">
           <span className="px-3 py-1 text-xs font-semibold bg-primary text-base-100 rounded-full">
-            Type
+            {contestType}
           </span>
         </div>
 
@@ -37,7 +41,9 @@ const ContestCard = () => {
         <div className="absolute bottom-3 right-3">
           <div className="flex items-center gap-1 px-3 py-1.5 bg-base-300/90 backdrop-blur-sm rounded-lg">
             <FiDollarSign className="w-4 h-4 text-primary" />
-            <span className="font-bold text-primary">1000$</span>
+            <span className="font-bold text-primary">
+              {prizeMoney} $
+            </span>
           </div>
         </div>
       </div>
@@ -45,29 +51,32 @@ const ContestCard = () => {
       {/* Content */}
       <div className="p-5">
         <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-          Contest Title
+          {name}
         </h3>
 
         <p className="text-base-content/70 text-sm mb-4 line-clamp-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. In porro
-          beatae itaque quis natus explicabo quo nemo dicta suscipit libero?
+          {description}
         </p>
 
         {/* Stats */}
         <div className="flex items-center justify-between text-sm text-base-content/70 mb-4">
           <div className="flex items-center gap-1">
             <FiUsers className="w-4 h-4" />
-            <span>100 participants</span>
+            <span>{participantCount} participants</span>
           </div>
-          <div className="flex items-center gap-1">
-            <FiClock className="w-4 h-4" />
-            Ended
-          </div>
+          {contestStatus.ended ? (
+            <div className="flex items-center gap-1">
+              <FiClock className="w-4 h-4" />
+              Ended
+            </div>
+          ) : (
+            contestStatus.display
+          )}
         </div>
 
         {/* Action Button */}
         <Link
-          to={`/contest/1`}
+          to={`/contest/${_id}`}
           className="flex items-center justify-center gap-2 w-full py-3 bg-primary/10 hover:bg-primary text-primary hover:text-base-100 font-semibold rounded-lg transition-all duration-300 group/btn"
         >
           View Details

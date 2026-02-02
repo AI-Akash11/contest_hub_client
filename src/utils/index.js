@@ -10,3 +10,36 @@ export const imageUpload = async (imageData) => {
   );
   return data?.data?.display_url;
 };
+
+export const getContestStatus = (deadline) => {
+  const now = new Date();
+  const endDate = new Date(deadline);
+  const timeDiff = endDate - now;
+
+  if (timeDiff <= 0) {
+    return { ended: true, display: "Ended" };
+  }
+
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+  );
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (days > 0) {
+    return {
+      ended: false,
+      display: `${days}d ${hours}h left`
+    }
+  } else if (hours > 0) {
+    return { 
+      ended: false, 
+      display: `${hours}h ${minutes}m left` 
+    };
+  } else {
+    return { 
+      ended: false, 
+      display: `${minutes}m left` 
+    };
+  }
+};
