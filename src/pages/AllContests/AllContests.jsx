@@ -21,8 +21,6 @@ const AllContests = () => {
     },
   });
 
-  console.log(allContests);
-
   if (isLoading) {
     return <LoadingSpinner></LoadingSpinner>;
   }

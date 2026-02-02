@@ -7,34 +7,38 @@ import {
   FiUser,
 } from "react-icons/fi";
 import Container from "../../components/Shared/Container";
+import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { formatDeadline } from "../../utils";
 
 const contest = {
-  name: "Ultimate UI Design Challenge",
-  type: "Design",
-  image:
-    "https://i.ibb.co.com/1f0k26yn/bfbe84ae883bd1b72308a9d510d8a3f2.jpg",
-  description:
-    "Participate in an exciting UI design challenge where creativity meets usability. Showcase your design skills and compete with talented creators worldwide.",
-  taskInstructions:
-    "Design a modern landing page for a creative contest platform. Submit your Figma or live demo link.",
-  prizeMoney: 2500,
-  entryFee: 25,
-  participantsCount: 342,
-  creatorName: "CreativeHub",
-  deadline: "March 30, 2026",
   winnerName: "Alex Johnson",
   winnerPhoto:
     "https://randomuser.me/api/portraits/men/32.jpg",
 };
 
 const ContestDetails = () => {
+  const {id} = useParams();
+  const {data: contestDetails = []} = useQuery({
+    queryKey: ["contestDetails", id],
+    queryFn: async ()=>{
+      const res = await axios.get(`http://localhost:3000/contest/${id}`)
+      return res.data
+    }
+  })
+
+  const {name, image, contestType, description, taskInstruction, prizeMoney, entryFee, participantCount, creatorName, deadline} = contestDetails || {} ;
+
+  const formatedDeadline = formatDeadline(deadline);
+
   return (
     <section className="bg-linear-to-br from-base-200 via-accent/5 to-primary/10 pb-20">
       {/* Hero */}
       <div className="relative h-64 md:h-96 overflow-hidden">
         <img
-          src={contest.image}
-          alt={contest.name}
+          src={image}
+          alt={name}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/30 to-transparent" />
@@ -43,10 +47,10 @@ const ContestDetails = () => {
           <Container>
             <div className="pb-8">
               <span className="inline-block px-4 py-1 mb-4 text-sm font-semibold bg-primary/20 text-primary rounded-full">
-                {contest.type} Contest
+                {contestType} Contest
               </span>
               <h1 className="text-3xl md:text-5xl font-bold text-white">
-                {contest.name}
+                {name}
               </h1>
             </div>
           </Container>
@@ -67,7 +71,7 @@ const ContestDetails = () => {
                 About This Contest
               </h2>
               <p className="text-base-content/70 leading-relaxed">
-                {contest.description}
+                {description}
               </p>
             </motion.div>
 
@@ -82,7 +86,7 @@ const ContestDetails = () => {
                 Task Instructions
               </h2>
               <p className="text-base-content/70 leading-relaxed">
-                {contest.taskInstructions}
+                {taskInstruction}
               </p>
             </motion.div>
 
@@ -112,7 +116,7 @@ const ContestDetails = () => {
                     {contest.winnerName}
                   </h3>
                   <p className="text-base-content/70">
-                    Won ${contest.prizeMoney}
+                    Won ${prizeMoney}
                   </p>
                 </div>
               </div>
@@ -130,23 +134,23 @@ const ContestDetails = () => {
               <Stat
                 icon={<FiDollarSign />}
                 label="Prize Money"
-                value={`$${contest.prizeMoney}`}
+                value={`$${prizeMoney}`}
                 color="primary"
               />
               <Stat
                 icon={<FiDollarSign />}
                 label="Entry Fee"
-                value={`$${contest.entryFee}`}
+                value={`$${entryFee}`}
               />
               <Stat
                 icon={<FiUsers />}
                 label="Participants"
-                value={contest.participantsCount}
+                value={participantCount}
               />
               <Stat
                 icon={<FiUser />}
                 label="Created By"
-                value={contest.creatorName}
+                value={creatorName}
               />
             </motion.div>
 
@@ -162,7 +166,7 @@ const ContestDetails = () => {
                 <h3 className="font-semibold">Deadline</h3>
               </div>
               <p className="text-lg font-bold text-primary">
-                {contest.deadline}
+                {formatedDeadline}
               </p>
             </motion.div>
 
@@ -173,7 +177,7 @@ const ContestDetails = () => {
               transition={{ delay: 0.2 }}
             >
               <button className="w-full py-4 rounded-xl bg-primary text-base-100 font-semibold hover:scale-105 transition">
-                Register & Pay ${contest.entryFee}
+                Register & Pay ${entryFee}
               </button>
             </motion.div>
           </div>
