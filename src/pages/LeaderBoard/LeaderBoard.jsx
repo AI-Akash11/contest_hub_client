@@ -76,7 +76,7 @@ const leaderboardData = [
 
 const LeaderBoard = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen py-12">
       <Container>
         {/* Header */}
         <motion.div

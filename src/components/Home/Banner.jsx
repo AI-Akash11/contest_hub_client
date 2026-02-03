@@ -78,7 +78,7 @@ const Banner = () => {
             >
               <div className="relative">
                 <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/60" />
-                <button className="absolute right-2 top-2 px-4 py-2 bg-primary text-base-100 font-semibold rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition duration-200">Search</button>
+                <button className="absolute right-2 top-2 px-4 py-2 bg-primary text-base-100 font-semibold rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition duration-200 cursor-pointer">Search</button>
                 <input
                   type="text"
                   placeholder="Search contests by type..."

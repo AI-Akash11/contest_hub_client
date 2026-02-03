@@ -47,7 +47,7 @@ const About = () => {
 
   return (
     <Container>
-      <section className="relative py-20 overflow-hidden ">
+      <section className="relative py-12 overflow-hidden ">
         <div className="absolute inset-0 bg-base-200 " />
         <div className="container mx-auto px-4 relative">
           <motion.div
