@@ -5,42 +5,51 @@ import {
   FiClock,
   FiAward,
   FiUser,
+  FiMail,
 } from "react-icons/fi";
 import Container from "../../components/Shared/Container";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { formatDeadline } from "../../utils";
+import { formatDeadline, getContestStatus } from "../../utils";
 
 const contest = {
   winnerName: "Alex Johnson",
-  winnerPhoto:
-    "https://randomuser.me/api/portraits/men/32.jpg",
+  winnerPhoto: "https://randomuser.me/api/portraits/men/32.jpg",
 };
 
 const ContestDetails = () => {
-  const {id} = useParams();
-  const {data: contestDetails = []} = useQuery({
+  const { id } = useParams();
+  const { data: contestDetails = [] } = useQuery({
     queryKey: ["contestDetails", id],
-    queryFn: async ()=>{
-      const res = await axios.get(`http://localhost:3000/contest/${id}`)
-      return res.data
-    }
-  })
+    queryFn: async () => {
+      const res = await axios.get(`http://localhost:3000/contest/${id}`);
+      return res.data;
+    },
+  });
 
-  const {name, image, contestType, description, taskInstruction, prizeMoney, entryFee, participantCount, creatorName, deadline} = contestDetails || {} ;
+  const {
+    name,
+    image,
+    contestType,
+    description,
+    taskInstruction,
+    prizeMoney,
+    entryFee,
+    participantCount,
+    creatorName,
+    creatorEmail,
+    deadline,
+  } = contestDetails || {};
 
   const formatedDeadline = formatDeadline(deadline);
+  const contestStatus = getContestStatus(deadline);
 
   return (
     <section className="bg-linear-to-br from-base-200 via-accent/5 to-primary/10 pb-20">
       {/* Hero */}
       <div className="relative h-64 md:h-96 overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
+        <img src={image} alt={name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/30 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0">
@@ -67,9 +76,7 @@ const ContestDetails = () => {
               animate={{ opacity: 1, y: 0 }}
               className="p-6 md:p-8 bg-base-300 rounded-2xl"
             >
-              <h2 className="text-xl font-bold mb-4">
-                About This Contest
-              </h2>
+              <h2 className="text-xl font-bold mb-4">About This Contest</h2>
               <p className="text-base-content/70 leading-relaxed">
                 {description}
               </p>
@@ -82,9 +89,7 @@ const ContestDetails = () => {
               transition={{ delay: 0.1 }}
               className="p-6 md:p-8 bg-base-300 rounded-2xl"
             >
-              <h2 className="text-xl font-bold mb-4">
-                Task Instructions
-              </h2>
+              <h2 className="text-xl font-bold mb-4">Task Instructions</h2>
               <p className="text-base-content/70 leading-relaxed">
                 {taskInstruction}
               </p>
@@ -112,12 +117,8 @@ const ContestDetails = () => {
                   <span className="text-sm text-primary font-medium">
                     🏆 Winner
                   </span>
-                  <h3 className="text-lg font-bold">
-                    {contest.winnerName}
-                  </h3>
-                  <p className="text-base-content/70">
-                    Won ${prizeMoney}
-                  </p>
+                  <h3 className="text-lg font-bold">{contest.winnerName}</h3>
+                  <p className="text-base-content/70">Won ${prizeMoney}</p>
                 </div>
               </div>
             </motion.div>
@@ -147,10 +148,11 @@ const ContestDetails = () => {
                 label="Participants"
                 value={participantCount}
               />
+              <Stat icon={<FiUser />} label="Created By" value={creatorName} />
               <Stat
-                icon={<FiUser />}
-                label="Created By"
-                value={creatorName}
+                icon={<FiMail />}
+                label="Creator Email"
+                value={creatorEmail}
               />
             </motion.div>
 
@@ -163,10 +165,16 @@ const ContestDetails = () => {
             >
               <div className="flex items-center gap-2 mb-4">
                 <FiClock className="text-primary" />
-                <h3 className="font-semibold">Deadline</h3>
+                <h3 className="font-semibold">Participation Deadline ---</h3>
               </div>
               <p className="text-lg font-bold text-primary">
-                {formatedDeadline}
+                {contestStatus.ended ? (
+                  <div className="flex items-center gap-1 text-error">
+                    Ended
+                  </div>
+                ) : (
+                  formatedDeadline
+                )}
               </p>
             </motion.div>
 
@@ -176,7 +184,9 @@ const ContestDetails = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <button className="w-full py-4 rounded-xl bg-primary text-base-100 font-semibold hover:scale-105 transition">
+              <button 
+              disabled={contestStatus.ended}
+              className="w-full py-4 rounded-xl bg-primary text-base-100 font-semibold hover:scale-105 transition disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:scale-100">
                 Register & Pay ${entryFee}
               </button>
             </motion.div>
