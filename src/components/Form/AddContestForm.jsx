@@ -68,11 +68,15 @@ const AddContestForm = () => {
         prizeMoney: Number(prizeMoney),
         entryFee: Number(entryFee),
         deadline,
-        creatorEmail: user?.email,
-        creatorName: user?.displayName,
-        creatorImage: user?.photoURL,
+        creator:{
+          email: user?.email,
+          name: user?.displayName,
+          image: user?.photoURL,
+        },
         status: "pending",
-        winner: "pending",
+        winner: {
+          status: "pending"
+        },
         participantCount: 0,
       };
 
