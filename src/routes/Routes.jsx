@@ -22,7 +22,6 @@ import EditContest from "../pages/Dashboard/Creator/EditContest";
 import SubmittedTasks from "../pages/Dashboard/Creator/SubmittedTasks";
 import BecomeCreator from "../pages/Dashboard/User/BecomeCreator";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
-import PaymentCancel from "../pages/Payment/PaymentCancel";
 
 export const router = createBrowserRouter([
   {
@@ -36,15 +35,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "/contest/:id",
-        element: <ContestDetails />,
+        element: (
+          <PrivateRoute>
+            <ContestDetails />
+          </PrivateRoute>
+        ),
       },
-            {
+      {
         path: "/payment-success",
         element: <PaymentSuccess />,
-      },
-            {
-        path: "/payment-cancel",
-        element: <PaymentCancel />,
       },
       {
         path: "/all-contests",
@@ -104,7 +103,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-            {
+      {
         path: "become-creator",
         element: (
           <PrivateRoute>

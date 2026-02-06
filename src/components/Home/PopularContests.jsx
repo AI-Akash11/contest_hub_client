@@ -13,13 +13,13 @@ const PopularContests = () => {
   } = useQuery({
     queryKey: ["popularContests"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:3000/latest-contests");
+      const res = await axios.get("http://localhost:3000/popular-contests");
       return res.data;
     },
   });
 
   if (isLoading) {
-    return <LoadingSpinner></LoadingSpinner>;
+    return <LoadingSpinner message="Loading Popular Contests"></LoadingSpinner>;
   }
 
   if (isError) {

@@ -34,6 +34,7 @@ const ContestDetails = () => {
     },
   });
 
+
   const {
     _id,
     name,
@@ -110,6 +111,16 @@ const ContestDetails = () => {
     });
 
     if (confirmation.isConfirmed) {
+      Swal.fire({
+        title: "Processing Payment...",
+        text: "Please wait while we redirect you to the payment gateway",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
       createCheckoutSession(paymentInfo);
     }
   };

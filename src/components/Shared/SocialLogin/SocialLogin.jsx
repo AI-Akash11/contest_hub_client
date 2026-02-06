@@ -24,7 +24,8 @@ const SocialLogin = () => {
     }
   };
   return (
-    <div
+    <button
+    disabled={loading}
       onClick={handleGoogleSignIn}
       className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer"
     >
@@ -37,7 +38,7 @@ const SocialLogin = () => {
           "Continue with Google"
         )}
       </p>
-    </div>
+    </button>
   );
 };
 
