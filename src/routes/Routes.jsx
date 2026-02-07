@@ -11,17 +11,17 @@ import Profile from "../pages/Dashboard/Common/Profile";
 import Statistics from "../pages/Dashboard/Common/Statistics";
 import MainLayout from "../layouts/MainLayout";
 import MyContests from "../pages/Dashboard/Creator/MyContests";
-import MyParticipated from "../pages/Dashboard/User/MyParticipated";
 import { createBrowserRouter } from "react-router";
 import AllContests from "../pages/AllContests/AllContests";
 import LeaderBoard from "../pages/LeaderBoard/LeaderBoard";
 import About from "../pages/About/About";
 import ManageContests from "../pages/Dashboard/Admin/ManageContests";
-import MyWinnings from "../pages/Dashboard/User/MyWinnings";
 import EditContest from "../pages/Dashboard/Creator/EditContest";
 import SubmittedTasks from "../pages/Dashboard/Creator/SubmittedTasks";
 import BecomeCreator from "../pages/Dashboard/User/BecomeCreator";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
+import MyParticipated from "../pages/Dashboard/Common/MyParticipated";
+import MyWinnings from "../pages/Dashboard/Common/MyWinnings";
 
 export const router = createBrowserRouter([
   {
@@ -78,16 +78,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      {
-        path: "profile",
-        element: (
-          <PrivateRoute>
-            <Profile />
-          </PrivateRoute>
-        ),
-      },
-      // user
-      {
+            {
         path: "my-participated",
         element: (
           <PrivateRoute>
@@ -103,6 +94,15 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path: "profile",
+        element: (
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        ),
+      },
+      // user
       {
         path: "become-creator",
         element: (

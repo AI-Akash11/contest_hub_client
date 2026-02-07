@@ -6,6 +6,7 @@ import { GrLogout } from "react-icons/gr";
 import { FcSettings } from "react-icons/fc";
 import { AiOutlineBars } from "react-icons/ai";
 import { BsGraphUp } from "react-icons/bs";
+import { FaListCheck, FaTrophy } from "react-icons/fa6";
 
 // User Menu
 import MenuItem from "./Menu/MenuItem";
@@ -69,6 +70,12 @@ const Sidebar = () => {
                 label="Statistics"
                 address="/dashboard"
               />
+                    <MenuItem
+        icon={FaListCheck}
+        label="My Participations"
+        address="my-participated"
+      />
+      <MenuItem icon={FaTrophy} label="My Winnings" address="my-winnings" />
               {/* Role-Based Menu */}
               {role === "user" && <UserMenu />}
               {role === "creator" && <CreatorMenu />}

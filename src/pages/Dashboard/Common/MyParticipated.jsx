@@ -3,17 +3,17 @@ import axios from "axios";
 import { Link } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const MyParticipated = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   const { data: participated = [], isLoading } = useQuery({
     queryKey: ["myParticipated", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/my-participated/${user.email}`
-      );
+      const res = await axiosSecure('/my-participated');
       return res.data;
     },
   });
