@@ -160,13 +160,13 @@ const Navbar = () => {
                         <>
                           <Link
                             to="/login"
-                            className="px-4 py-3 hover:bg-neutral-100 transition font-semibold"
+                            className="px-4 py-3 hover:bg-base-300 transition font-semibold"
                           >
                             Login
                           </Link>
                           <Link
                             to="/signup"
-                            className="px-4 py-3 hover:bg-neutral-100 transition font-semibold"
+                            className="px-4 py-3 hover:bg-base-300 transition font-semibold"
                           >
                             Sign Up
                           </Link>

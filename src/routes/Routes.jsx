@@ -20,8 +20,8 @@ import EditContest from "../pages/Dashboard/Creator/EditContest";
 import SubmittedTasks from "../pages/Dashboard/Creator/SubmittedTasks";
 import BecomeCreator from "../pages/Dashboard/User/BecomeCreator";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
-import MyParticipated from "../pages/Dashboard/Common/MyParticipated";
-import MyWinnings from "../pages/Dashboard/Common/MyWinnings";
+import MyParticipated from "../pages/Dashboard/User/MyParticipated";
+import MyWinnings from "../pages/Dashboard/User/MyWinnings";
 
 export const router = createBrowserRouter([
   {
@@ -78,22 +78,6 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-            {
-        path: "my-participated",
-        element: (
-          <PrivateRoute>
-            <MyParticipated />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "my-winnings",
-        element: (
-          <PrivateRoute>
-            <MyWinnings />
-          </PrivateRoute>
-        ),
-      },
       {
         path: "profile",
         element: (
@@ -108,6 +92,22 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <BecomeCreator />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "my-participated",
+        element: (
+          <PrivateRoute>
+            <MyParticipated />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "my-winnings",
+        element: (
+          <PrivateRoute>
+            <MyWinnings />
           </PrivateRoute>
         ),
       },

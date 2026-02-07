@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Link } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
@@ -21,7 +20,7 @@ const MyParticipated = () => {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto p-4">
       <div className="py-4">
         <div className="mb-6">
           <h2 className="text-3xl font-bold mb-2">
