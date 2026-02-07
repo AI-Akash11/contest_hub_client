@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router";
 import { TbFidgetSpinner } from "react-icons/tb";
+import { saveOrUpdateUser } from "../../../utils";
 
 const SocialLogin = () => {
   const { signInWithGoogle, loading } = useAuth();
@@ -14,7 +15,13 @@ const SocialLogin = () => {
   const handleGoogleSignIn = async () => {
     try {
       //User Registration using google
-      await signInWithGoogle();
+      const { user } = await signInWithGoogle();
+
+      await saveOrUpdateUser({
+        name: user?.displayName,
+        email: user?.email,
+        image: user?.photoURL,
+      });
 
       navigate(from, { replace: true });
       toast.success("Signup Successful");
@@ -25,7 +32,7 @@ const SocialLogin = () => {
   };
   return (
     <button
-    disabled={loading}
+      disabled={loading}
       onClick={handleGoogleSignIn}
       className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer"
     >

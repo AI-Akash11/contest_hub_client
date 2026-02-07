@@ -3,14 +3,16 @@ import useAuth from "../../hooks/useAuth";
 import { TbFidgetSpinner } from "react-icons/tb";
 import { useForm } from "react-hook-form";
 import SocialLogin from "../../components/Shared/SocialLogin/SocialLogin";
-import { imageUpload } from "../../utils";
+import { imageUpload, saveOrUpdateUser } from "../../utils";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const SignUp = () => {
   const { createUser, updateUserProfile, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state || "/";
+  const [imageLoading, setImageLoading] = useState(false);
 
   // React hook form
   const {
@@ -24,19 +26,21 @@ const SignUp = () => {
 
     const imageFile = image[0];
 
-
     try {
+          setImageLoading(true)
 
       const imageURL = await imageUpload(imageFile);
+          setImageLoading(false)
+
+
 
       //2. User Registration
       const result = await createUser(email, password);
 
+      await saveOrUpdateUser({ name, email, image: imageURL });
+
       //3. Save username & profile photo
-      await updateUserProfile(
-        name,
-        imageURL
-      );
+      await updateUserProfile(name, imageURL);
       console.log(result);
 
       navigate(from, { replace: true });
@@ -47,18 +51,14 @@ const SignUp = () => {
     }
   };
 
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
       <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-base-200 text-base-content">
         <div className="mb-8 text-center">
           <h1 className="my-3 text-4xl font-bold">Sign Up</h1>
-          <p className="text-sm text-base-content/50">Welcome to PlantNet</p>
+          <p className="text-sm text-base-content/50">Welcome to Contest Hub.</p>
         </div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             {/* Name */}
             <div>
@@ -185,7 +185,7 @@ const SignUp = () => {
               disabled={loading}
               className="bg-primary w-full rounded-md py-3 text-white"
             >
-              {loading ? (
+              {loading || imageLoading ? (
                 <TbFidgetSpinner className="animate-spin m-auto" />
               ) : (
                 "Continue"
