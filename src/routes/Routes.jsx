@@ -22,6 +22,7 @@ import BecomeCreator from "../pages/Dashboard/User/BecomeCreator";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 import MyParticipated from "../pages/Dashboard/User/MyParticipated";
 import MyWinnings from "../pages/Dashboard/User/MyWinnings";
+import CreatorRequests from "../pages/Dashboard/Admin/CreatorRequests";
 
 export const router = createBrowserRouter([
   {
@@ -145,6 +146,14 @@ export const router = createBrowserRouter([
         ),
       },
       // admin
+      {
+        path: "creator-requests",
+        element: (
+          <PrivateRoute>
+            <CreatorRequests />
+          </PrivateRoute>
+        ),
+      },
       {
         path: "manage-contests",
         element: (
