@@ -8,7 +8,7 @@ import {
   FiMail,
 } from "react-icons/fi";
 import Container from "../../components/Shared/Container";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { formatDeadline, getContestStatus } from "../../utils";
 import Swal from "sweetalert2";
@@ -17,11 +17,14 @@ import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import ErrorPage from "../ErrorPage";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useRole from "../../hooks/useRole";
+import SubmissionForm from "../../components/Form/SubmissionForm";
 
 const ContestDetails = () => {
   const { user } = useAuth();
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
+  const [role, isRoleLoading] = useRole();
 
   const {
     data: contestDetails = {},
@@ -35,6 +38,14 @@ const ContestDetails = () => {
     },
   });
 
+  const { data: hasPaid = false } = useQuery({
+    queryKey: ["user-payment", id, user?.email],
+    enabled: !!user?.email && !!id && role === "user",
+    queryFn: async () => {
+      const res = await axiosSecure(`/check-payments/${id}`);
+      return res.data.hasPaid;
+    },
+  });
 
   const {
     _id,
@@ -50,7 +61,8 @@ const ContestDetails = () => {
     deadline,
     winner,
   } = contestDetails || {};
-  console.log(winner);
+
+  const isOwnContest = creator?.email === user?.email;
 
   const formatedDeadline = formatDeadline(deadline);
   const contestStatus = getContestStatus(deadline);
@@ -126,7 +138,7 @@ const ContestDetails = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isRoleLoading) {
     return <LoadingSpinner />;
   }
 
@@ -343,7 +355,7 @@ const ContestDetails = () => {
               <Stat
                 icon={<FiUser />}
                 label="Created By:"
-                value={creator.name}
+                value={creator?.name}
               />
             </motion.div>
 
@@ -422,22 +434,51 @@ const ContestDetails = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <button
-                disabled={contestStatus.ended || isPaymentPending}
-                onClick={handlePayment}
-                className="w-full py-4 rounded-xl bg-primary text-base-100 font-semibold hover:scale-105 transition disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {isPaymentPending ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Processing...
-                  </>
-                ) : contestStatus.ended ? (
-                  "Contest Ended"
+              {role === "user" ? (
+                <>
+                {!hasPaid ? (
+                                  <button
+                  disabled={contestStatus.ended || isPaymentPending}
+                  onClick={handlePayment}
+                  className="w-full py-4 rounded-xl bg-primary text-base-100 font-semibold hover:scale-105 transition disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isPaymentPending ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm"></span>
+                      Processing...
+                    </>
+                  ) : contestStatus.ended ? (
+                    "Contest Ended"
+                  ) : (
+                    `Register & Pay $${entryFee}`
+                  )}
+                </button>
                 ) : (
-                  `Register & Pay $${entryFee}`
-                )}
-              </button>
+                  <SubmissionForm/>
+                )
+              }
+                </>
+              ) : isOwnContest ? (
+                <div className="text-center py-4 bg-accent/10 border border-accent/30 rounded-xl">
+                  <p className="text-sm font-semibold text-accent mb-2">
+                    Own Contest
+                  </p>
+                  <Link
+                    to={`/dashboard/submitted-tasks/${_id}`}
+                    className="btn btn-sm btn-accent"
+                  >
+                    Manage Submissions
+                  </Link>
+                </div>
+              ) : (
+                <div className="text-center py-4 bg-base-300 rounded-xl">
+                  <p className="text-sm text-base-content/70">
+                    {role === "admin"
+                      ? "Admins cannot participate in contests"
+                      : "Creators cannot participate in contests"}
+                  </p>
+                </div>
+              )}
             </motion.div>
           </div>
         </div>
