@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
-import axios from "axios";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import ErrorPage from "../../ErrorPage";
 import { Link } from "react-router";
@@ -8,10 +7,12 @@ import { FiEdit2, FiTrash2, FiEye, FiClock, FiFileText } from "react-icons/fi";
 import { formatDeadline, getContestStatus } from "../../../utils";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const MyContests = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const axiosSecure  = useAxiosSecure();
 
   const {
     data: myContests = [],
@@ -20,8 +21,8 @@ const MyContests = () => {
   } = useQuery({
     queryKey: ["my-contests", user.email],
     queryFn: async () => {
-      const res = await axios.get(
-        `http://localhost:3000/my-contests/${user.email}`,
+      const res = await axiosSecure(
+        `/my-contests`,
       );
       return res.data;
     },
@@ -30,8 +31,8 @@ const MyContests = () => {
   // Delete Mutation
   const { mutate: deleteContest } = useMutation({
     mutationFn: async (contestId) => {
-      const { data } = await axios.delete(
-        `http://localhost:3000/my-contests/${contestId}`,
+      const { data } = await axiosSecure.delete(
+        `/my-contests/${contestId}`,
       );
       return data;
     },

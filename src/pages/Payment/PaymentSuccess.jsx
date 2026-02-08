@@ -1,19 +1,20 @@
-import axios from "axios";
 import React, { useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
+  const axiosSecure = useAxiosSecure()
 
   const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
     if (sessionId) {
-      axios.post(`${import.meta.env.VITE_API_URL}/payment-success`, {
+      axiosSecure.post(`/payment-success`, {
         sessionId,
       });
     }
-  }, [sessionId]);
+  }, [sessionId, axiosSecure]);
   console.log(sessionId);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-base-200 px-4">

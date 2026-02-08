@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
-import axios from "axios";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import ErrorPage from "../../ErrorPage";
 import { motion } from "framer-motion";
@@ -15,10 +14,12 @@ import {
   FiCalendar,
 } from "react-icons/fi";
 import useRole from "../../../hooks/useRole";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Profile = () => {
   const { user } = useAuth();
-  const [role, isRoleLoading] = useRole();
+  const [role] = useRole();
+  const axiosSecure = useAxiosSecure();
 
   const {
     data: userInfo = {},
@@ -28,9 +29,7 @@ const Profile = () => {
     queryKey: ["user", user.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axios(
-        `${import.meta.env.VITE_API_URL}/user/${user.email}`
-      );
+      const res = await axiosSecure(`/user`);
       return res.data;
     },
   });
@@ -46,7 +45,9 @@ const Profile = () => {
   // Calculate win percentage
   const winPercentage =
     userInfo.contestsParticipated > 0
-      ? ((userInfo.contestsWon / userInfo.contestsParticipated) * 100).toFixed(1)
+      ? ((userInfo.contestsWon / userInfo.contestsParticipated) * 100).toFixed(
+          1,
+        )
       : 0;
 
   return (
@@ -238,12 +239,15 @@ const Profile = () => {
                 <span className="text-sm text-base-content/70">Net P/L</span>
                 <span
                   className={`font-bold text-lg ${
-                    (userInfo.totalWinnings || 0) - (userInfo.totalSpent || 0) >= 0
+                    (userInfo.totalWinnings || 0) -
+                      (userInfo.totalSpent || 0) >=
+                    0
                       ? "text-success"
                       : "text-error"
                   }`}
                 >
-                  {(userInfo.totalWinnings || 0) - (userInfo.totalSpent || 0) >= 0
+                  {(userInfo.totalWinnings || 0) - (userInfo.totalSpent || 0) >=
+                  0
                     ? "+"
                     : ""}
                   $

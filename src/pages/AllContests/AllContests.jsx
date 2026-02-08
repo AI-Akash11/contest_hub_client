@@ -16,7 +16,7 @@ const AllContests = () => {
   } = useQuery({
     queryKey: ["allContests"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:3000/all-contests");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/all-contests`);
       return res.data;
     },
   });

@@ -10,17 +10,18 @@ import {
 import Container from "../../components/Shared/Container";
 import { useParams } from "react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { formatDeadline, getContestStatus } from "../../utils";
 import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import ErrorPage from "../ErrorPage";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const ContestDetails = () => {
   const { user } = useAuth();
   const { id } = useParams();
+  const axiosSecure = useAxiosSecure();
 
   const {
     data: contestDetails = {},
@@ -29,7 +30,7 @@ const ContestDetails = () => {
   } = useQuery({
     queryKey: ["contestDetails", id],
     queryFn: async () => {
-      const res = await axios.get(`http://localhost:3000/contest/${id}`);
+      const res = await axiosSecure.get(`/contest/${id}`);
       return res.data;
     },
   });
@@ -58,8 +59,8 @@ const ContestDetails = () => {
   const { mutate: createCheckoutSession, isPending: isPaymentPending } =
     useMutation({
       mutationFn: async (paymentInfo) => {
-        const { data } = await axios.post(
-          `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+        const { data } = await axiosSecure.post(
+          `/create-checkout-session`,
           paymentInfo,
         );
         return data;

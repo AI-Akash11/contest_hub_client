@@ -2,12 +2,13 @@ import { useForm, useWatch } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { imageUpload } from "../../utils";
 import useAuth from "../../hooks/useAuth";
-import axios from "axios";
-import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const AddContestForm = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
+
   const {
     register,
     handleSubmit,
@@ -23,8 +24,8 @@ const AddContestForm = () => {
 
   const { mutateAsync: createContest, isPending } = useMutation({
     mutationFn: async (contestData) => {
-      const { data } = await axios.post(
-        "http://localhost:3000/contest",
+      const { data } = await axiosSecure.post(
+        `/contest`,
         contestData,
       );
       return data;

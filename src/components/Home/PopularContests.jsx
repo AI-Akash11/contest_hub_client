@@ -13,7 +13,7 @@ const PopularContests = () => {
   } = useQuery({
     queryKey: ["popularContests"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:3000/popular-contests");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/popular-contests`);
       return res.data;
     },
   });
