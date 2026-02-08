@@ -13,6 +13,7 @@ import AdminMenu from "./Menu/AdminMenu";
 import CreatorMenu from "./Menu/CreatorMenu";
 import UserMenu from "./Menu/UserMenu";
 import useRole from "../../../hooks/useRole";
+import LoadingSpinner from "../../Shared/LoadingSpinner";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
@@ -23,6 +24,10 @@ const Sidebar = () => {
   const handleToggle = () => {
     setActive(!isActive);
   };
+
+  if(isRoleLoading){
+    return <LoadingSpinner message="Loading Sidebar"></LoadingSpinner>
+  }
 
   return (
     <>
