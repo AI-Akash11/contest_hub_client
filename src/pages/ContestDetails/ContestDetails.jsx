@@ -454,7 +454,11 @@ const ContestDetails = () => {
                   )}
                 </button>
                 ) : (
-                  <SubmissionForm/>
+                  <SubmissionForm
+                  contestId={_id}
+                  contestName={name}
+                  contestEnded={contestStatus.ended}
+                  />
                 )
               }
                 </>
