@@ -6,13 +6,14 @@ import SocialLogin from "../../components/Shared/SocialLogin/SocialLogin";
 import { useForm } from "react-hook-form";
 
 const Login = () => {
-  const { signIn, loading, user } = useAuth();
+  const { signIn, loading, user, setLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state || "/";
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -31,6 +32,8 @@ const Login = () => {
     } catch (err) {
       console.log(err);
       toast.error(err?.message);
+      reset()
+      setLoading(false)
     }
   };
 
