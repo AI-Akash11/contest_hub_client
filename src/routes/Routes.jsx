@@ -25,6 +25,7 @@ import MyWinnings from "../pages/Dashboard/User/MyWinnings";
 import CreatorRequests from "../pages/Dashboard/Admin/CreatorRequests";
 import CreatorRoute from "./CreatorRoute";
 import AdminRoute from "./AdminRoute";
+import InDevelopment from "../components/Shared/InDevelopment/InDevelopment";
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: "/about",
         element: <About></About>,
+      },
+      {
+        path: "/coming-soon",
+        element: <InDevelopment />,
       },
     ],
   },
