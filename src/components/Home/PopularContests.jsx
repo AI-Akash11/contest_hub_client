@@ -4,6 +4,7 @@ import ContestCard from "../Shared/Card/ContestCard";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "../Shared/LoadingSpinner";
+import { Link } from "react-router";
 
 const PopularContests = () => {
   const {
@@ -13,7 +14,9 @@ const PopularContests = () => {
   } = useQuery({
     queryKey: ["popularContests"],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/popular-contests`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/popular-contests`,
+      );
       return res.data;
     },
   });
@@ -50,12 +53,21 @@ const PopularContests = () => {
 
         {/* Contests Grid */}
         <section className="pb-16">
-          <div className="flex items-center justify-between mb-6"></div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {popularContests.map((contest) => (
               <ContestCard key={contest._id} contest={contest} />
             ))}
+          </div>
+
+          <div className="flex justify-center mt-12">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/all-contests"
+                className="px-8 py-3 rounded-xl bg-primary text-base-100 font-semibold shadow-lg hover:bg-primary/90 transition"
+              >
+                Show All Contests
+              </Link>
+            </motion.div>
           </div>
         </section>
       </div>
