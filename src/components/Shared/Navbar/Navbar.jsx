@@ -6,11 +6,32 @@ import useAuth from "../../../hooks/useAuth";
 import avatarImg from "../../../assets/images/placeholder.jpg";
 import useTheme from "../../../hooks/useTheme";
 import { FiMoon, FiSun } from "react-icons/fi";
+import useRole from "../../../hooks/useRole";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Navbar = () => {
-  const { user, logOut } = useAuth();
+  const { user, logOut, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const [role, isRoleLoading] = useRole();
+  const axiosSecure = useAxiosSecure();
+
+  const {
+    data: userInfo,
+    isLoading: isUserInfoLoading,
+  } = useQuery({
+    queryKey: ["user", user?.email],
+    enabled: !!user?.email && !loading,
+    queryFn: async () => {
+      const res = await axiosSecure("/user");
+      return res.data;
+    },
+  });
+
+  const handleClickOutside = () => {
+    if (isOpen) setIsOpen(false);
+  };
 
   const links = (
     <>
@@ -29,9 +50,27 @@ const Navbar = () => {
     </>
   );
 
+
+  const getDisplayImage = () => {
+    if (userInfo?.image) return userInfo.image;
+    if (user?.photoURL) return user.photoURL;
+    return avatarImg;
+  };
+
+  const getDisplayName = () => {
+    if (userInfo?.name) return userInfo.name;
+    if (user?.displayName) return user.displayName;
+    return "User";
+  };
+
+  const getDisplayRole = () => {
+    if (role) return role.charAt(0).toUpperCase() + role.slice(1);
+    return "User";
+  };
+
   return (
     <div className="fixed w-full bg-base-300 z-10 shadow-sm border-b border-white/10 rounded-b-2xl">
-      <div className="py-1 ">
+      <div className="py-1">
         <Container>
           <div className="navbar">
             <div className="navbar-start">
@@ -49,13 +88,12 @@ const Navbar = () => {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    {" "}
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
                       d="M4 6h16M4 12h8m-8 6h16"
-                    />{" "}
+                    />
                   </svg>
                 </div>
                 <ul
@@ -109,71 +147,148 @@ const Navbar = () => {
                 />
               </label>
 
-              {/* Dropdown Menu */}
+              {/* User Dropdown */}
               <div className="relative">
                 <div className="flex flex-row items-center gap-3">
-                  {/* Dropdown btn */}
+                  {/* Dropdown */}
                   <div
                     onClick={() => setIsOpen(!isOpen)}
-                    className="p-4 md:py-1 md:px-2 border border-neutral-200 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition"
+                    className="flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-lg shadow-md transition"
                   >
-                    <AiOutlineMenu />
-                    <div className="hidden md:block">
-                      {/* Avatar */}
+                    <div className="relative">
+                      {/* image */}
                       <img
-                        className="rounded-full"
+                        className="rounded-full w-10 h-10 object-cover ring-2 ring-base-content/20"
                         referrerPolicy="no-referrer"
-                        src={user && user.photoURL ? user.photoURL : avatarImg}
+                        src={user ? getDisplayImage() : avatarImg}
                         alt="profile"
-                        height="30"
-                        width="30"
                       />
-                    </div>
-                  </div>
-                </div>
-                {isOpen && (
-                  <div className="absolute rounded-xl shadow-md w-[40vw] md:w-[10vw] bg-base-100 overflow-hidden right-0 top-12 text-sm">
-                    <div className="flex flex-col cursor-pointer">
-                      <Link
-                        to="/"
-                        className="block md:hidden px-4 py-3 hover:bg-base-100 transition font-semibold"
-                      >
-                        Home
-                      </Link>
-
-                      {user ? (
-                        <>
-                          <Link
-                            to="/dashboard"
-                            className="px-4 py-3 hover:bg-base-300 transition font-semibold"
-                          >
-                            Dashboard
-                          </Link>
-                          <div
-                            onClick={logOut}
-                            className="px-4 py-3 hover:bg-base-300 transition font-semibold cursor-pointer"
-                          >
-                            Logout
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <Link
-                            to="/login"
-                            className="px-4 py-3 hover:bg-base-300 transition font-semibold"
-                          >
-                            Login
-                          </Link>
-                          <Link
-                            to="/signup"
-                            className="px-4 py-3 hover:bg-base-300 transition font-semibold"
-                          >
-                            Sign Up
-                          </Link>
-                        </>
+                      {/* green dot */}
+                      {user && (
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-base-300"></span>
                       )}
                     </div>
                   </div>
+                </div>
+
+                {/* Dropdown Menu */}
+                {isOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={handleClickOutside}
+                    ></div>
+
+                    {/* Dropdown */}
+                    <div className="absolute rounded-xl shadow-md w-64 bg-base-100 overflow-hidden right-0 top-12 text-sm z-20 border border-base-content/10">
+                      <div className="flex flex-col cursor-pointer">
+                        {user && !loading ? (
+                          <>
+                            {/* User Info */}
+                            <div className="px-4 py-3 bg-base-200 border-b border-base-content/10">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={getDisplayImage()}
+                                  alt="User"
+                                  className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  {isUserInfoLoading || isRoleLoading ? (
+                                    <>
+                                      <div className="h-4 bg-base-300 rounded w-24 mb-2 animate-pulse"></div>
+                                      <div className="h-3 bg-base-300 rounded w-16 animate-pulse"></div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <p className="font-semibold truncate">
+                                        {getDisplayName()}
+                                      </p>
+                                      <span className="badge badge-primary badge-xs">
+                                        {getDisplayRole()}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Email */}
+                            <div className="px-4 py-2 border-b border-base-content/10">
+                              <p className="text-xs text-base-content/60 truncate">
+                                {user?.email}
+                              </p>
+                            </div>
+
+                            {/* Dashboard Link */}
+                            <Link
+                              to="/dashboard"
+                              onClick={() => setIsOpen(false)}
+                              className="px-4 py-3 hover:bg-base-200 transition font-semibold flex items-center gap-2"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                                />
+                              </svg>
+                              Dashboard
+                            </Link>
+
+                            {/* Logout Button */}
+                            <div
+                              onClick={() => {
+                                logOut();
+                                setIsOpen(false);
+                              }}
+                              className="px-4 py-3 hover:bg-base-200 transition font-semibold text-error flex items-center gap-2"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                />
+                              </svg>
+                              Logout
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {/* Login/Signup */}
+                            <Link
+                              to="/login"
+                              onClick={() => setIsOpen(false)}
+                              className="px-4 py-3 hover:bg-base-200 transition font-semibold"
+                            >
+                              Login
+                            </Link>
+                            <Link
+                              to="/signup"
+                              onClick={() => setIsOpen(false)}
+                              className="px-4 py-3 hover:bg-base-200 transition font-semibold"
+                            >
+                              Sign Up
+                            </Link>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
