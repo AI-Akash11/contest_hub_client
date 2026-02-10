@@ -26,6 +26,7 @@ import CreatorRequests from "../pages/Dashboard/Admin/CreatorRequests";
 import CreatorRoute from "./CreatorRoute";
 import AdminRoute from "./AdminRoute";
 import InDevelopment from "../components/Shared/InDevelopment/InDevelopment";
+import UpdateProfile from "../pages/Dashboard/Common/UpdateProfile";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,14 @@ export const router = createBrowserRouter([
             <Profile />
           </PrivateRoute>
         ),
+      },
+      {
+        path: "update-profile",
+        element: (
+          <PrivateRoute>
+            <UpdateProfile></UpdateProfile>
+          </PrivateRoute>
+        )
       },
       // user
       {
