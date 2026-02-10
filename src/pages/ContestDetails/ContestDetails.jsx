@@ -283,7 +283,7 @@ const StatsSidebar = ({ prizeMoney, entryFee, participantCount, creator, contest
       <div className="p-6 bg-base-300">
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-base-content/10">
-            <span className="text-sm text-base-content/70">{contestStatus.ended ? "Closed on:" : "Deadline:"}</span>
+            <span className="text-sm text-base-content/70">{contestStatus.ended ? "Deadline:" : "Deadline:"}</span>
             <span className="font-semibold">{formatedDeadline}</span>
           </div>
           {contestStatus.ended ? (

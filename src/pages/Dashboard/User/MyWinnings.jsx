@@ -41,10 +41,7 @@ const MyWinnings = () => {
                   Contest
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold">
-                  Prize
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold">
-                  Status
+                  Result
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold">
                   Action
@@ -70,15 +67,10 @@ const MyWinnings = () => {
                     </div>
                   </td>
 
-                  {/* Prize */}
-                  <td className="px-6 py-4 font-semibold text-success">
-                    ${item.prize}
-                  </td>
-
-                  {/* Status */}
+                  {/* Result (badge-style preserved) */}
                   <td className="px-6 py-4">
-                    <span className="badge badge-success badge-outline">
-                      Won
+                    <span className="badge badge-success badge-outline px-4 py-3 text-sm font-semibold">
+                      Won ${item.prize}
                     </span>
                   </td>
 
@@ -97,7 +89,7 @@ const MyWinnings = () => {
               {winnings.length === 0 && (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="3"
                     className="text-center py-10 text-base-content/60"
                   >
                     You haven’t won any contests yet.

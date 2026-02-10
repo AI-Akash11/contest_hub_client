@@ -12,7 +12,7 @@ const MyParticipated = () => {
     queryKey: ["myParticipated", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure('/my-participated');
+      const res = await axiosSecure("/my-participated");
       return res.data;
     },
   });
@@ -27,7 +27,7 @@ const MyParticipated = () => {
             My Participated <span className="gradient-text">Contests</span>
           </h2>
           <p className="text-base-content/70">
-            See your participated contests, the price you paid and status. 
+            See your participated contests and payment status.
           </p>
         </div>
 
@@ -39,10 +39,7 @@ const MyParticipated = () => {
                   Contest
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold">
-                  Paid
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold">
-                  Status
+                  Payment Status
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold">
                   Action
@@ -68,15 +65,10 @@ const MyParticipated = () => {
                     </div>
                   </td>
 
-                  {/* Price */}
-                  <td className="px-6 py-4 font-semibold">
-                    ${item.price}
-                  </td>
-
-                  {/* Status */}
+                  {/* Payment Status (primary badge style) */}
                   <td className="px-6 py-4">
-                    <span className="badge badge-success badge-outline">
-                      Paid
+                    <span className="badge badge-primary badge-outline px-4 py-3 text-sm font-semibold">
+                      Paid ${item.price}
                     </span>
                   </td>
 
@@ -95,7 +87,7 @@ const MyParticipated = () => {
               {participated.length === 0 && (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="3"
                     className="text-center py-10 text-base-content/60"
                   >
                     You haven’t participated in any contests yet.
