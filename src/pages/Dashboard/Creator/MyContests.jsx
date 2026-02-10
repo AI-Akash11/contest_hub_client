@@ -12,7 +12,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 const MyContests = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const axiosSecure  = useAxiosSecure();
+  const axiosSecure = useAxiosSecure();
 
   const {
     data: myContests = [],
@@ -21,9 +21,7 @@ const MyContests = () => {
   } = useQuery({
     queryKey: ["my-contests", user.email],
     queryFn: async () => {
-      const res = await axiosSecure(
-        `/my-contests`,
-      );
+      const res = await axiosSecure(`/my-contests`);
       return res.data;
     },
   });
@@ -31,9 +29,7 @@ const MyContests = () => {
   // Delete Mutation
   const { mutate: deleteContest } = useMutation({
     mutationFn: async (contestId) => {
-      const { data } = await axiosSecure.delete(
-        `/my-contests/${contestId}`,
-      );
+      const { data } = await axiosSecure.delete(`/my-contests/${contestId}`);
       return data;
     },
     onSuccess: () => {
@@ -206,7 +202,7 @@ const MyContests = () => {
                                     }`}
                                   >
                                     {contest.status === "approved"
-                                      ? "Contest is live"
+                                      ? "Contest was approved"
                                       : "Cannot edit rejected contest"}
                                   </p>
                                 )}
@@ -221,6 +217,7 @@ const MyContests = () => {
                               <div className="flex items-center gap-2">
                                 <FiClock
                                   className={`w-4 h-4 ${
+                                    contest.winner?.status === "declared" ||
                                     contestStatus.ended
                                       ? "text-error"
                                       : "text-success"
@@ -232,12 +229,15 @@ const MyContests = () => {
                                   </p>
                                   <p
                                     className={`text-xs font-semibold ${
+                                      contest.winner?.status === "declared" ||
                                       contestStatus.ended
                                         ? "text-error"
                                         : "text-accent"
                                     }`}
                                   >
-                                    {contestStatus.display}
+                                    {contest.winner?.status === "declared"
+                                      ? "Contest Closed"
+                                      : contestStatus.display}
                                   </p>
                                 </div>
                               </div>
@@ -306,7 +306,10 @@ const MyContests = () => {
                     <div className="flex items-center gap-2 mb-4 bg-base-300 p-2 rounded-lg">
                       <FiClock
                         className={`w-4 h-4 shrink-0 ${
-                          contestStatus.ended ? "text-error" : "text-success"
+                          contest.winner?.status === "declared" ||
+                          contestStatus.ended
+                            ? "text-error"
+                            : "text-success"
                         }`}
                       />
                       <div className="flex-1">
@@ -315,10 +318,15 @@ const MyContests = () => {
                         </p>
                         <p
                           className={`text-xs font-semibold ${
-                            contestStatus.ended ? "text-error" : "text-accent"
+                            contest.winner?.status === "declared" ||
+                            contestStatus.ended
+                              ? "text-error"
+                              : "text-accent"
                           }`}
                         >
-                          {contestStatus.display}
+                          {contest.winner?.status === "declared"
+                            ? "Contest Closed"
+                            : contestStatus.display}
                         </p>
                       </div>
                     </div>
@@ -361,7 +369,7 @@ const MyContests = () => {
                           }`}
                         >
                           {contest.status === "approved"
-                            ? "Contest is live"
+                            ? "Contest was approved"
                             : "Cannot edit rejected contest"}
                         </p>
                       )}

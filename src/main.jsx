@@ -7,6 +7,8 @@ import AuthProvider from "./providers/AuthProvider.jsx";
 import { Toaster } from "react-hot-toast";
 import ThemeProvider from "./providers/themeContext/ThemeProvider.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const queryClient = new QueryClient();
 

@@ -1,9 +1,10 @@
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { imageUpload } from "../../utils";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import DatePicker from "react-datepicker";
 
 const AddContestForm = () => {
   const { user } = useAuth();
@@ -24,10 +25,7 @@ const AddContestForm = () => {
 
   const { mutateAsync: createContest, isPending } = useMutation({
     mutationFn: async (contestData) => {
-      const { data } = await axiosSecure.post(
-        `/contest`,
-        contestData,
-      );
+      const { data } = await axiosSecure.post(`/contest`, contestData);
       return data;
     },
     onSuccess: () => {
@@ -69,14 +67,14 @@ const AddContestForm = () => {
         prizeMoney: Number(prizeMoney),
         entryFee: Number(entryFee),
         deadline,
-        creator:{
+        creator: {
           email: user?.email,
           name: user?.displayName,
           image: user?.photoURL,
         },
         status: "pending",
         winner: {
-          status: "pending"
+          status: "pending",
         },
         participantCount: 0,
       };
@@ -312,23 +310,34 @@ const AddContestForm = () => {
 
         {/* Deadline */}
         <div>
-          <div>
-            <label className="block text-sm font-semibold mb-1">
-              Submission Deadline
-            </label>
-            <input
-              type="datetime-local"
-              min={new Date().toISOString().slice(0, 16)}
-              className="w-full bg-base-200 rounded-lg px-4 py-3 border border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary"
-              {...register("deadline", {
-                required: "Deadline is Required",
-              })}
-            />
-          </div>
+          <label className="block text-sm font-semibold mb-1">
+            Submission Deadline
+          </label>
+
+          <Controller
+            name="deadline"
+            control={control}
+            rules={{ required: "Deadline is Required" }}
+            render={({ field }) => (
+              <DatePicker
+                selected={field.value}
+                onChange={(date) => field.onChange(date)}
+                minDate={new Date()}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm"
+                placeholderText="Select deadline date & time"
+                className="w-full bg-base-200 rounded-lg px-4 py-3 border border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            )}
+          />
+
           {errors.deadline && (
             <p className="text-error text-sm mt-1">{errors.deadline.message}</p>
           )}
         </div>
+
         {/* Description */}
         <div>
           <div>
