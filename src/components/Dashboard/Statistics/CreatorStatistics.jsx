@@ -37,7 +37,6 @@ const CreatorStatistics = () => {
   const pieData = [
     { name: "Created", value: contestsCreated },
     { name: "Completed", value: contestsCompleted },
-    { name: "Prize Paid", value: totalPrizePaid },
   ];
 
   return (

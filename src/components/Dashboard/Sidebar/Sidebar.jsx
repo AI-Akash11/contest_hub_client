@@ -31,6 +31,12 @@ const Sidebar = () => {
 
   return (
     <>
+    {!isActive && (
+  <div
+    onClick={handleToggle}
+    className="fixed inset-0 z-0 bg-black/40 md:hidden"
+  />
+)}
       {/* Small Screen Navbar, only visible till md breakpoint */}
       <div className="bg-base-200 text-base-content flex justify-between md:hidden">
         <div>
