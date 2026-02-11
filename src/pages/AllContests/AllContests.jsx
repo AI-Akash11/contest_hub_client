@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { FiSearch, FiX } from "react-icons/fi";
+import { FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import ContestCard from "../../components/Shared/Card/ContestCard";
 import Container from "../../components/Shared/Container";
 import { useQuery } from "@tanstack/react-query";
@@ -15,15 +15,22 @@ const AllContests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDragging, setIsDragging] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const hasReadUrlParams = useRef(false);
 
-  useEffect(()=>{
-    const urlSearch = searchParams.get("search");
-    if(urlSearch){
-      setSearchQuery(urlSearch)
-      searchParams.delete("search");
-      setSearchParams(searchParams, {replace: true})
+  useEffect(() => {
+    if (!hasReadUrlParams.current) {
+      const urlSearch = searchParams.get("search");
+      if (urlSearch) {
+        setSearchQuery(urlSearch);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete("search");
+        setSearchParams(newParams, { replace: true });
+      }
+      hasReadUrlParams.current = true;
     }
-  },[searchParams, setSearchParams])
+  }, [searchParams, setSearchParams]);
 
   const {
     data: allContests = [],
@@ -72,9 +79,26 @@ const AllContests = () => {
     return filtered;
   }, [allContests, selectedCategory, searchQuery]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredContests.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentContests = filteredContests.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory]);
+
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (isLoading) {
@@ -139,7 +163,6 @@ const AllContests = () => {
             transition={{ delay: 0.2 }}
             className="mb-4 relative"
           >
-
             {/* Scrollable Container */}
             <div className="overflow-hidden px-4">
               <motion.div
@@ -224,14 +247,10 @@ const AllContests = () => {
               <p className="text-base-content/70">
                 Showing{" "}
                 <span className="text-base-content font-semibold">
-                  {filteredContests.length}
+                  {startIndex + 1}-{Math.min(endIndex, filteredContests.length)}
                 </span>{" "}
-                {selectedCategory !== "All" && (
-                  <span>
-                    of{" "}
-                    <span className="font-semibold">{allContests.length}</span>
-                  </span>
-                )}{" "}
+                of{" "}
+                <span className="font-semibold">{filteredContests.length}</span>{" "}
                 contests
                 {searchQuery && (
                   <span className="ml-2 text-sm">
@@ -248,7 +267,7 @@ const AllContests = () => {
               transition={{ delay: 0.3 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {filteredContests.map((contest, index) => (
+              {currentContests.map((contest, index) => (
                 <motion.div
                   key={contest._id}
                   initial={{ opacity: 0, y: 20 }}
@@ -259,6 +278,72 @@ const AllContests = () => {
                 </motion.div>
               ))}
             </motion.div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-12">
+                {/* Previous Button */}
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FiChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => {
+                      // Show first page, last page, current page, and pages around current
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`btn btn-sm ${
+                              currentPage === page
+                                ? "btn-primary"
+                                : "btn-outline"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      } else if (
+                        page === currentPage - 2 ||
+                        page === currentPage + 2
+                      ) {
+                        return (
+                          <span
+                            key={page}
+                            className="flex items-center px-2"
+                          >
+                            ...
+                          </span>
+                        );
+                      }
+                      return null;
+                    }
+                  )}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                  <FiChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </section>
         )}
       </div>

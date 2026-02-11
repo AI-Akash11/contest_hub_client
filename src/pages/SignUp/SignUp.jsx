@@ -37,7 +37,7 @@ const SignUp = () => {
       //2. User Registration
       const result = await createUser(email, password);
 
-      await saveOrUpdateUser({ name, email, image: imageURL });
+      await saveOrUpdateUser({ name, email: email.toLowerCase(), image: imageURL });
 
       //3. Save username & profile photo
       await updateUserProfile(name, imageURL);

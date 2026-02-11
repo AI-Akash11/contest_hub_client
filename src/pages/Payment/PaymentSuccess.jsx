@@ -55,7 +55,7 @@ const PaymentSuccess = () => {
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
           <Link to={'/dashboard/my-participated'} className="btn btn-primary">Go to My Participations</Link>
-          <Link to={'/'} className="btn btn-outline btn-sm">Back to Home</Link>
+          <Link to={'/'} className="btn btn-secondary">Back to Home</Link>
         </div>
       </div>
     </div>

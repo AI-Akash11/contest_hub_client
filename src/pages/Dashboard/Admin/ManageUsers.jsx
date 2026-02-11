@@ -4,14 +4,16 @@ import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import ErrorPage from "../../ErrorPage";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
-import { useState } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import { useState, useMemo } from "react";
+import { FiChevronDown, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const ManageUsers = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Get all users
   const {
@@ -85,6 +87,20 @@ const ManageUsers = () => {
   // Filter current user
   const filteredUsers = users.filter((u) => u.email !== user?.email);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentUsers = useMemo(() => {
+    return filteredUsers.slice(startIndex, endIndex);
+  }, [filteredUsers, startIndex, endIndex]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setOpenDropdown(null); // Close any open dropdown
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   //  role badge color
   const getRoleBadge = (role) => {
     const badges = {
@@ -116,6 +132,23 @@ const ManageUsers = () => {
           </p>
         </div>
 
+        {/* User Count */}
+        {filteredUsers.length > 0 && (
+          <div className="mb-4">
+            <p className="text-sm text-base-content/70">
+              Showing{" "}
+              <span className="font-semibold text-base-content">
+                {startIndex + 1}-{Math.min(endIndex, filteredUsers.length)}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-base-content">
+                {filteredUsers.length}
+              </span>{" "}
+              users
+            </p>
+          </div>
+        )}
+
         {/* Table Container */}
         <div className="rounded-xl shadow-lg shadow-base">
           <table className="min-w-full leading-normal bg-base-100">
@@ -130,7 +163,7 @@ const ManageUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length === 0 ? (
+              {currentUsers.length === 0 ? (
                 <tr>
                   <td
                     colSpan="2"
@@ -140,7 +173,7 @@ const ManageUsers = () => {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((userData) => (
+                currentUsers.map((userData) => (
                   <tr
                     key={userData._id}
                     className="hover:bg-base-200/50 transition border-b border-base-300"
@@ -199,7 +232,7 @@ const ManageUsers = () => {
 
                         {/* dropdown */}
                         {openDropdown === userData._id && (
-                          <div className="absolute z-50 mt-2 w-40 bg-base-100 border border-base-300 rounded-lg shadow-xl">
+                          <div className="absolute z-50 mt-2 w-40 bg-base-100 border border-base-300 rounded-lg shadow-xl right-0">
                             <div className="py-1">
                               {["user", "creator", "admin"].map((role) => (
                                 <button
@@ -234,6 +267,67 @@ const ManageUsers = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
+            {/* Previous Button */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FiChevronLeft className="w-4 h-4" />
+              Previous
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => {
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`btn btn-sm ${
+                          currentPage === page ? "btn-primary" : "btn-outline"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <span key={page} className="flex items-center px-2">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                }
+              )}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+              <FiChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
