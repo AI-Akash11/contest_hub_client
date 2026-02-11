@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { FiSearch, FiTrendingUp, FiAward, FiUsers } from "react-icons/fi";
 import CountUp from "react-countup";
 import Container from "../Shared/Container";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const stats = [
   {
@@ -26,13 +28,25 @@ const stats = [
 ];
 
 const Banner = () => {
-  return (
-    <section className="overflow-hidden bg-linear-to-br from-base-200 via-accent/5 to-primary/10" >
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (searchQuery.trim()) {
+      navigate(
+        `/all-contests?search=${encodeURIComponent(searchQuery.trim())}`,
+      );
+    } else {
+      navigate("/all-contests");
+    }
+  };
+  return (
+    <section className="overflow-hidden bg-linear-to-br from-base-200 via-accent/5 to-primary/10">
       <Container>
         <div className="min-h-[65vh] flex items-center py-5 md:py-10 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
-
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -52,8 +66,7 @@ const Banner = () => {
               transition={{ delay: 0.1 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
             >
-              Unleash Your{" "}
-              <span className="gradient-text">Creative</span>
+              Unleash Your <span className="gradient-text">Creative</span>
               <br />
               Potential & Win Big
             </motion.h1>
@@ -66,25 +79,34 @@ const Banner = () => {
               className="text-lg md:text-xl text-base-content/70 mb-10 max-w-2xl mx-auto"
             >
               Join thousands of talented creators in exciting competitions.
-              Showcase your skills, compete globally, and win amazing cash prizes.
+              Showcase your skills, compete globally, and win amazing cash
+              prizes.
             </motion.p>
 
-            {/* Search Bar (UI only) */}
+            {/* Search Bar */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="max-w-xl mx-auto mb-12"
             >
-              <div className="relative">
-                <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/60" />
-                <button className="absolute right-2 top-2 px-4 py-2 bg-primary text-base-100 font-semibold rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition duration-200 cursor-pointer">Search</button>
-                <input
-                  type="text"
-                  placeholder="Search contests by type..."
-                  className="w-full pl-14 pr-4 py-4 bg-base-300 rounded-2xl border border-base-content/10 focus:outline-primary"
-                />
-              </div>
+              <form onSubmit={handleSearch}>
+                <div className="relative">
+                  <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/60" />
+                  <button 
+                  type="submit"
+                  className="absolute right-2 top-2 px-4 py-2 bg-primary text-base-100 font-semibold rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition duration-200 cursor-pointer">
+                    Search
+                  </button>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e)=> setSearchQuery(e.target.value)}
+                    placeholder="Search contests by type..."
+                    className="w-full pl-14 pr-24 py-4 bg-base-300 rounded-2xl border border-base-content/10 focus:outline-primary"
+                  />
+                </div>
+              </form>
             </motion.div>
 
             {/* Stats */}
@@ -119,7 +141,6 @@ const Banner = () => {
                 </div>
               ))}
             </motion.div>
-
           </div>
         </div>
       </Container>

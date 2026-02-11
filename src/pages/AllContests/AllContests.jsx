@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiSearch, FiX } from "react-icons/fi";
 import ContestCard from "../../components/Shared/Card/ContestCard";
@@ -8,11 +8,22 @@ import axios from "axios";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import ErrorPage from "../ErrorPage";
 import NotFound from "../../components/Shared/NotFound/NotFound";
+import { useSearchParams } from "react-router";
 
 const AllContests = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(()=>{
+    const urlSearch = searchParams.get("search");
+    if(urlSearch){
+      setSearchQuery(urlSearch)
+      searchParams.delete("search");
+      setSearchParams(searchParams, {replace: true})
+    }
+  },[searchParams, setSearchParams])
 
   const {
     data: allContests = [],
