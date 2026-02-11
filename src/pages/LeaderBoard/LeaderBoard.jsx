@@ -1,80 +1,26 @@
 import { motion } from "framer-motion";
 import Container from "../../components/Shared/Container";
-
-const leaderboardData = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    wins: 18,
-    earnings: 24500,
-    avatar: "https://i.pravatar.cc/150?img=32",
-  },
-  {
-    id: 2,
-    name: "Alex Carter",
-    wins: 15,
-    earnings: 19800,
-    avatar: "https://i.pravatar.cc/150?img=12",
-  },
-  {
-    id: 3,
-    name: "Emily Davis",
-    wins: 13,
-    earnings: 16200,
-    avatar: "https://i.pravatar.cc/150?img=47",
-  },
-  {
-    id: 4,
-    name: "Michael Lee",
-    wins: 12,
-    earnings: 14100,
-    avatar: "https://i.pravatar.cc/150?img=22",
-  },
-  {
-    id: 5,
-    name: "Sophia Brown",
-    wins: 11,
-    earnings: 13200,
-    avatar: "https://i.pravatar.cc/150?img=25",
-  },
-  {
-    id: 6,
-    name: "Daniel Wilson",
-    wins: 10,
-    earnings: 12100,
-    avatar: "https://i.pravatar.cc/150?img=18",
-  },
-  {
-    id: 7,
-    name: "Olivia Martin",
-    wins: 9,
-    earnings: 10900,
-    avatar: "https://i.pravatar.cc/150?img=40",
-  },
-  {
-    id: 8,
-    name: "James Anderson",
-    wins: 8,
-    earnings: 9800,
-    avatar: "https://i.pravatar.cc/150?img=36",
-  },
-  {
-    id: 9,
-    name: "Isabella Moore",
-    wins: 7,
-    earnings: 8700,
-    avatar: "https://i.pravatar.cc/150?img=29",
-  },
-  {
-    id: 10,
-    name: "William Taylor",
-    wins: 6,
-    earnings: 7600,
-    avatar: "https://i.pravatar.cc/150?img=15",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+import ErrorPage from "../ErrorPage";
 
 const LeaderBoard = () => {
+  const {data: leaderboardData = [], isLoading, isError} = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: async () => {
+      const res = await axios(`${import.meta.env.VITE_API_URL}/leaderboard`);
+      return res.data
+    },
+  });
+  if(isLoading){
+    return <LoadingSpinner></LoadingSpinner>
+  }
+
+  if(isError){
+    return <ErrorPage></ErrorPage>
+  }
+  console.log(leaderboardData)
   return (
     <div className="min-h-screen py-12">
       <Container>
@@ -88,7 +34,7 @@ const LeaderBoard = () => {
             <span className="gradient-text">Leaderboard</span>
           </h1>
           <p className="text-base-content/70">
-            Top creators ranked by contest wins
+            Top creators ranked by Prize Money
           </p>
         </motion.div>
 
