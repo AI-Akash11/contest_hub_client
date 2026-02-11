@@ -60,7 +60,7 @@ const AdminStatistics = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
         {/* Approved Contests */}
-        <div className="relative bg-base-100 rounded-xl shadow-md p-6 overflow-hidden">
+        <div className="relative bg-base-300 rounded-xl shadow-md p-6 overflow-hidden">
           <div className="absolute top-4 right-4 text-success">
             <FaCheckCircle className="w-8 h-8 opacity-80" />
           </div>
@@ -69,7 +69,7 @@ const AdminStatistics = () => {
         </div>
 
         {/* Rejected Contests */}
-        <div className="relative bg-base-100 rounded-xl shadow-md p-6 overflow-hidden">
+        <div className="relative bg-base-300 rounded-xl shadow-md p-6 overflow-hidden">
           <div className="absolute top-4 right-4 text-warning">
             <FaTimesCircle className="w-8 h-8 opacity-80" />
           </div>
@@ -78,7 +78,7 @@ const AdminStatistics = () => {
         </div>
 
         {/* Deleted Contests */}
-        <div className="relative bg-base-100 rounded-xl shadow-md p-6 overflow-hidden">
+        <div className="relative bg-base-300 rounded-xl shadow-md p-6 overflow-hidden">
           <div className="absolute top-4 right-4 text-error">
             <FaTrashAlt className="w-8 h-8 opacity-80" />
           </div>
@@ -89,7 +89,7 @@ const AdminStatistics = () => {
 
       {/* Future Widgets Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-base-100 rounded-xl shadow-md p-6">
+        <div className="lg:col-span-2 bg-base-300 rounded-xl shadow-md p-6">
           <h3 className="text-lg font-semibold mb-4">
             Administrative Actions Summary
           </h3>
@@ -123,7 +123,7 @@ const AdminStatistics = () => {
         </div>
 
         {/* Info / Notes */}
-        <div className="bg-base-100 rounded-xl shadow-md p-6">
+        <div className="bg-base-300 rounded-xl shadow-md p-6">
           <h4 className="text-lg font-semibold mb-2">Administrative Notes</h4>
           <p className="text-sm text-base-content/60 mb-4">
             These metrics reflect cumulative admin actions since platform

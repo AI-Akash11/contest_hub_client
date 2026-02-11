@@ -124,7 +124,7 @@ const MyContests = () => {
                       return (
                         <tr
                           key={contest._id}
-                          className="hover:bg-base-200/50 border-b border-base-300"
+                          className="hover:bg-base-300/50 border-b bg-base-300 border-base-100"
                         >
                           {/* Contest Info Column */}
                           <td className="px-5 py-5">

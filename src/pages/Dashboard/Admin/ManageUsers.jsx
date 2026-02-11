@@ -153,7 +153,7 @@ const ManageUsers = () => {
         <div className="rounded-xl shadow-lg shadow-base">
           <table className="min-w-full leading-normal bg-base-100">
             <thead>
-              <tr className="bg-base-200">
+              <tr className="bg-base-300">
                 <th className="px-5 py-4 border-b border-base-300 text-base-content text-left text-sm uppercase font-semibold">
                   User
                 </th>
@@ -176,7 +176,7 @@ const ManageUsers = () => {
                 currentUsers.map((userData) => (
                   <tr
                     key={userData._id}
-                    className="hover:bg-base-200/50 transition border-b border-base-300"
+                    className="hover:bg-base-200/50 transition border-b bg-base-200 border-base-300"
                   >
                     <td className="px-5 py-5">
                       <div className="flex items-center gap-4">
