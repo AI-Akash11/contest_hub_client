@@ -30,7 +30,7 @@ const SubmittedTasks = () => {
   const { mutate: declareWinner, isLoading: isDeclaring } = useMutation({
     mutationFn: async (submissionId) => {
       const res = await axiosSecure.patch(
-        `/submissions/declare-winner/${submissionId}`
+        `/submissions/declare-winner/${submissionId}`,
       );
       return res.data;
     },
@@ -40,9 +40,7 @@ const SubmittedTasks = () => {
       queryClient.invalidateQueries(["contest-submissions", id]);
     },
     onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Failed to declare winner"
-      );
+      toast.error(error.response?.data?.message || "Failed to declare winner");
     },
   });
 
@@ -72,9 +70,7 @@ const SubmittedTasks = () => {
       </h2>
 
       {submissions.length === 0 ? (
-        <p className="text-center text-base-content/60">
-          No submissions yet
-        </p>
+        <p className="text-center text-base-content/60">No submissions yet</p>
       ) : (
         <div className="grid gap-4">
           {submissions.map((item) => (
@@ -89,9 +85,7 @@ const SubmittedTasks = () => {
                   className="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <p className="font-semibold">
-                    {item.participantName}
-                  </p>
+                  <p className="font-semibold">{item.participantName}</p>
                   <p className="text-xs text-base-content/60">
                     {item.participantEmail}
                   </p>
@@ -100,9 +94,7 @@ const SubmittedTasks = () => {
 
               <div className="flex items-center gap-3">
                 {item.status === "winner" && (
-                  <span className="badge badge-success">
-                    Winner
-                  </span>
+                  <span className="badge badge-success">Winner</span>
                 )}
 
                 <button
@@ -138,9 +130,7 @@ const SubmittedTasks = () => {
             </div>
 
             <div className="bg-base-200 p-4 rounded-lg mb-6">
-              <p className="text-sm font-semibold mb-2">
-                Submission Link
-              </p>
+              <p className="text-sm font-semibold mb-2">Submission Link</p>
               <a
                 href={selectedSubmission.submissionLink}
                 target="_blank"
@@ -162,9 +152,7 @@ const SubmittedTasks = () => {
               {selectedSubmission.status !== "winner" && (
                 <button
                   disabled={isDeclaring}
-                  onClick={() =>
-                    handleDeclareWinner(selectedSubmission._id)
-                  }
+                  onClick={() => handleDeclareWinner(selectedSubmission._id)}
                   className="btn btn-success"
                 >
                   {isDeclaring ? "Declaring..." : "Declare Winner"}

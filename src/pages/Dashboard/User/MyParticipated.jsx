@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { FiDollarSign, FiEye } from "react-icons/fi";
 
 const MyParticipated = () => {
   const { user } = useAuth();
@@ -31,7 +32,8 @@ const MyParticipated = () => {
           </p>
         </div>
 
-        <div className="overflow-x-auto bg-base-300 rounded-xl shadow">
+        {/* Desktop Table View - Hidden on Mobile */}
+        <div className="hidden md:block overflow-x-auto bg-base-300 rounded-xl shadow">
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-base-content/10">
@@ -65,7 +67,7 @@ const MyParticipated = () => {
                     </div>
                   </td>
 
-                  {/* Payment Status (primary badge style) */}
+                  {/* Payment Status */}
                   <td className="px-6 py-4">
                     <span className="badge badge-primary badge-outline px-4 py-3 text-sm font-semibold">
                       Paid ${item.price}
@@ -90,12 +92,66 @@ const MyParticipated = () => {
                     colSpan="3"
                     className="text-center py-10 text-base-content/60"
                   >
-                    You haven’t participated in any contests yet.
+                    You haven't participated in any contests yet.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View - Visible only on Mobile */}
+        <div className="md:hidden space-y-4">
+          {participated.length === 0 ? (
+            <div className="text-center py-10 bg-base-300 rounded-xl">
+              <p className="text-base-content/60">
+                You haven't participated in any contests yet.
+              </p>
+            </div>
+          ) : (
+            participated.map((item) => (
+              <div
+                key={item._id}
+                className="bg-base-300 rounded-xl p-4 shadow-lg"
+              >
+                {/* Contest Image and Name */}
+                <div className="flex items-center gap-3 mb-4">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-16 h-16 rounded-lg object-cover ring-2 ring-base-content/20"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base-content line-clamp-2">
+                      {item.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Payment Status */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-lg px-3 py-2">
+                    <FiDollarSign className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-semibold text-primary">
+                      Paid ${item.price}
+                    </span>
+                    <span className="ml-auto badge badge-success badge-xs">
+                      Completed
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <Link
+                  to={`/contest/${item.contestId}`}
+                  className="btn btn-primary btn-sm w-full gap-2"
+                >
+                  <FiEye className="w-4 h-4" />
+                  View Details
+                </Link>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

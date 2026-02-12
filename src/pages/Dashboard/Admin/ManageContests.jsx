@@ -202,33 +202,37 @@ const ManageContests = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-base-200 rounded-xl p-4">
-            <p className="text-sm text-base-content/60 mb-1">Total Contests</p>
-            <p className="text-2xl font-bold">{contests.length}</p>
+            <p className="text-xs md:text-sm text-base-content/60 mb-1">
+              Total Contests
+            </p>
+            <p className="text-xl md:text-2xl font-bold">{contests.length}</p>
           </div>
           <div className="bg-primary/10 border border-primary/30 rounded-xl p-4">
-            <p className="text-sm text-primary/80 mb-1">Pending Review</p>
-            <p className="text-2xl font-bold text-primary">
+            <p className="text-xs md:text-sm text-primary/80 mb-1">
+              Pending Review
+            </p>
+            <p className="text-xl md:text-2xl font-bold text-primary">
               {pendingContests.length}
             </p>
           </div>
           <div className="bg-accent/10 border border-accent/30 rounded-xl p-4">
-            <p className="text-sm text-accent/80 mb-1">Approved</p>
-            <p className="text-2xl font-bold text-accent">
+            <p className="text-xs md:text-sm text-accent/80 mb-1">Approved</p>
+            <p className="text-xl md:text-2xl font-bold text-accent">
               {approvedContests.length}
             </p>
           </div>
           <div className="bg-error/10 border border-error/30 rounded-xl p-4">
-            <p className="text-sm text-error/80 mb-1">Rejected</p>
-            <p className="text-2xl font-bold text-error">
+            <p className="text-xs md:text-sm text-error/80 mb-1">Rejected</p>
+            <p className="text-xl md:text-2xl font-bold text-error">
               {rejectedContests.length}
             </p>
           </div>
         </div>
 
-        {/* Table Container */}
-        <div className="rounded-xl shadow-lg overflow-hidden">
+        {/* Desktop Table */}
+        <div className="hidden md:block rounded-xl shadow-lg overflow-hidden">
           <table className="min-w-full leading-normal bg-base-100">
             <thead>
               <tr className="bg-base-200">
@@ -256,10 +260,10 @@ const ManageContests = () => {
                     key={contest._id}
                     className="hover:bg-base-200/50 transition border-b border-base-300"
                   >
-                    {/* contest Details */}
+                    {/* Contest Details */}
                     <td className="px-5 py-5">
                       <div className="flex items-start gap-4">
-                        {/* image */}
+                        {/* Image */}
                         <div className="shrink-0">
                           <img
                             className="w-24 h-24 rounded-lg object-cover ring-2 ring-base-300"
@@ -268,7 +272,7 @@ const ManageContests = () => {
                           />
                         </div>
 
-                        {/* info */}
+                        {/* Info */}
                         <div className="flex-1 min-w-0">
                           {/* Title and status */}
                           <div className="flex items-start justify-between gap-3 mb-2">
@@ -297,21 +301,21 @@ const ManageContests = () => {
 
                           {/* Creator and participants */}
                           <div className="flex items-center gap-4 text-xs text-base-content/70 mb-2">
-                            <span className="flex gap-1">
-                              <FaUser></FaUser> By:{" "}
-                              <strong>{contest.creator?.name}</strong>
+                            <span className="flex gap-1 items-center">
+                              <FaUser />
+                              By: <strong>{contest.creator?.name}</strong>
                             </span>
-                            <span className="flex gap-1">
-                              <FaUsers></FaUsers>{" "}
+                            <span className="flex gap-1 items-center">
+                              <FaUsers />
                               <strong>{contest.participantCount}</strong>{" "}
                               participants
                             </span>
                           </div>
 
                           {/* Deadline */}
-                          <div className="text-xs text-base-content/60 flex gap-1">
-                            <FaCalendar></FaCalendar> Deadline:{" "}
-                            {formatDeadline(contest.deadline)}
+                          <div className="text-xs text-base-content/60 flex gap-1 items-center">
+                            <FaCalendar />
+                            Deadline: {formatDeadline(contest.deadline)}
                           </div>
                         </div>
                       </div>
@@ -393,6 +397,146 @@ const ManageContests = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {contests.length === 0 ? (
+            <div className="text-center py-10 text-base-content/70">
+              No contests found
+            </div>
+          ) : (
+            contests.map((contest) => (
+              <div
+                key={contest._id}
+                className="bg-base-200 rounded-xl p-4 shadow-lg"
+              >
+                <div className="flex gap-3 mb-4">
+                  <img
+                    src={contest.image}
+                    alt={contest.name}
+                    className="w-20 h-20 rounded-lg object-cover ring-2 ring-base-300"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base-content mb-1 line-clamp-2">
+                      {contest.name}
+                    </h3>
+                    <span
+                      className={`badge ${getStatusBadge(contest.status)} capitalize badge-sm`}
+                    >
+                      {contest.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Contest Type */}
+                <div className="mb-3">
+                  <span className="badge badge-primary badge-sm">
+                    {contest.contestType}
+                  </span>
+                </div>
+
+                {/* Prize and Entry Fee */}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-sm font-semibold text-success">
+                    ${contest.prizeMoney} Prize
+                  </span>
+                  <span className="text-xs text-base-content/60">
+                    ${contest.entryFee} Entry
+                  </span>
+                </div>
+
+                {/* Creator and Participants */}
+                <div className="space-y-1 mb-3 text-xs text-base-content/70">
+                  <div className="flex items-center gap-1">
+                    <FaUser className="w-3 h-3" />
+                    <span>
+                      By: <strong>{contest.creator?.name}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FaUsers className="w-3 h-3" />
+                    <span>
+                      <strong>{contest.participantCount}</strong> participants
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FaCalendar className="w-3 h-3" />
+                    <span>Deadline: {formatDeadline(contest.deadline)}</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col gap-2">
+                  {/* View Details */}
+                  <Link
+                    to={`/contest/${contest._id}`}
+                    className="btn btn-sm btn-outline gap-2 w-full"
+                  >
+                    <FiEye className="w-4 h-4" />
+                    View Details
+                  </Link>
+
+                  {contest.status === "pending" && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() =>
+                          handleApprove(contest._id, contest.name)
+                        }
+                        className="btn btn-sm bg-accent text-base-content/80 hover:bg-accent/80 gap-1"
+                      >
+                        <FiCheckCircle className="w-3 h-3" />
+                        Approve
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleReject(contest._id, contest.name)
+                        }
+                        className="btn btn-sm bg-primary text-base-content/80 hover:bg-primary/80 gap-1"
+                      >
+                        <FiXCircle className="w-3 h-3" />
+                        Reject
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleDelete(contest._id, contest.name)
+                        }
+                        className="btn btn-sm bg-error text-base-content/80 hover:bg-error/80 gap-1 col-span-2"
+                      >
+                        <FiTrash2 className="w-3 h-3" />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+
+                  {contest.status === "approved" && (
+                    <div className="text-xs text-accent flex items-center gap-1 justify-center py-2 bg-accent/10 rounded">
+                      <FiCheckCircle className="w-3 h-3" />
+                      Contest is live
+                    </div>
+                  )}
+
+                  {contest.status === "rejected" && (
+                    <>
+                      <button
+                        onClick={() =>
+                          handleDelete(contest._id, contest.name)
+                        }
+                        className="btn btn-sm bg-error text-error-content hover:bg-error/80 gap-2"
+                      >
+                        <FiTrash2 className="w-4 h-4" />
+                        Delete
+                      </button>
+                      <div className="text-xs text-error flex items-center gap-1 justify-center py-2 bg-error/10 rounded">
+                        <FiXCircle className="w-3 h-3" />
+                        Contest is rejected
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
