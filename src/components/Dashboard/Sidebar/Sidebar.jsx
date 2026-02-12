@@ -34,7 +34,7 @@ const Sidebar = () => {
     {!isActive && (
   <div
     onClick={handleToggle}
-    className="fixed inset-0 z-0 bg-black/40 md:hidden"
+    className="fixed inset-0 z-10 bg-black/40 md:hidden"
   />
 )}
       {/* Small Screen Navbar, only visible till md breakpoint */}
@@ -55,7 +55,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`z-10 md:fixed flex flex-col justify-between overflow-x-hidden bg-base-200 w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform ${
+        className={`z-20 md:fixed flex flex-col justify-between overflow-x-hidden bg-base-200 w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform max-h-screen ${
           isActive && "-translate-x-full"
         }  md:translate-x-0  transition duration-200 ease-in-out`}
       >
