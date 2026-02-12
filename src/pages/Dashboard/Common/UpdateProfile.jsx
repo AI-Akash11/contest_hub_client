@@ -18,6 +18,7 @@ const UpdateProfile = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const {
@@ -47,11 +48,10 @@ const UpdateProfile = () => {
     },
   });
 
-  const imageFile = watch("imageFile");
   const bioLength = watch("bio")?.length || 0;
 
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo?.email) {
       reset({
         name: userInfo.name || "",
         email: userInfo.email || "",
@@ -61,6 +61,7 @@ const UpdateProfile = () => {
     }
   }, [userInfo, reset]);
 
+    //  Update profile mutation
   const { mutate: updateProfile, isPending: isUpdating } = useMutation({
     mutationFn: async (data) => {
       const res = await axiosSecure.patch("/user/update", data);
@@ -73,86 +74,68 @@ const UpdateProfile = () => {
         text: "Profile updated successfully",
         icon: "success",
         confirmButtonText: "OK",
-      }).then(() => {
-        navigate("/dashboard/profile");
-      });
+      }).then(() => navigate("/dashboard/profile"));
     },
     onError: (error) => {
       Swal.fire({
         title: "Error!",
         text: error.response?.data?.message || "Failed to update profile",
         icon: "error",
-        confirmButtonText: "OK",
       });
     },
   });
 
-  // Handle image preview
+
+  // Image handling
+
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image size should be less than 5MB");
-        return;
-      }
+    if (!file) return;
 
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please select a valid image file");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setSelectedImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
   };
 
-  // Form submit
+//  Form submit 
   const onSubmit = async (data) => {
     try {
       let imageUrl = userInfo.image;
 
-      // Upload new image
-      if (imageFile && imageFile[0]) {
+      if (selectedImage) {
         setIsUploading(true);
-        try {
-          imageUrl = await imageUpload(imageFile[0]);
-          toast.success("Image uploaded successfully");
-        } catch (error) {
-          toast.error("Failed to upload image");
-          setIsUploading(false);
-          return;
-        }
+        imageUrl = await imageUpload(selectedImage);
         setIsUploading(false);
       }
 
-      const updatedData = {
+      updateProfile({
         name: data.name,
-        email: data.email,
         bio: data.bio,
         image: imageUrl,
-      };
-
-      updateProfile(updatedData);
-    } catch (error) {
+      });
+    } catch (err) {
+      setIsUploading(false);
       toast.error("Something went wrong");
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (isError) {
-    return <ErrorPage />;
-  }
+  if (isLoading) return <LoadingSpinner />;
+  if (isError) return <ErrorPage />;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold mb-2">
           Update <span className="gradient-text">Profile</span>
@@ -162,172 +145,107 @@ const UpdateProfile = () => {
         </p>
       </div>
 
-      {/* Form Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="lg:col-span-3 bg-base-200 rounded-2xl shadow-xl overflow-hidden"
-        >
-          {/* Cover */}
-          <div className="h-32 bg-gradient-to-r from-primary via-accent to-secondary"></div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-base-200 rounded-2xl shadow-xl overflow-hidden"
+      >
+        <div className="h-32 bg-gradient-to-r from-primary via-accent to-secondary" />
 
-          {/* Form  */}
-          <form onSubmit={handleSubmit(onSubmit)} className="px-8 pb-8">
-            <div className="flex flex-col items-center -mt-16 mb-8">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-75"></div>
-                <img
-                  src={imagePreview || userInfo.image}
-                  alt="Profile"
-                  className="relative w-32 h-32 rounded-full object-cover border-4 border-base-200 shadow-xl"
+        <form onSubmit={handleSubmit(onSubmit)} className="px-8 pb-8">
+          {/* Avatar */}
+          <div className="flex flex-col items-center -mt-16 mb-8">
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover border-4 border-base-200 shadow-xl"
+              />
+              <label
+                htmlFor="imageFile"
+                className="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full flex items-center justify-center cursor-pointer border-2 border-base-200"
+              >
+                <FiCamera className="text-base-100" />
+                <input
+                  id="imageFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
                 />
-                <label
-                  htmlFor="imageFile"
-                  className="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/80 transition shadow-lg border-2 border-base-200"
-                >
-                  <FiCamera className="w-5 h-5 text-base-100" />
-                  <input
-                    id="imageFile"
-                    type="file"
-                    accept="image/*"
-                    {...register("imageFile")}
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-
-              <p className="text-sm text-base-content/60 text-center mt-4">
-                Click the camera icon to update your profile picture
-              </p>
-              <p className="text-xs text-base-content/50 mt-1">
-                Max size: 5MB • Formats: JPG, PNG, GIF
-              </p>
+              </label>
             </div>
+          </div>
 
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Name */}
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold flex items-center gap-2">
-                      <FiUser className="w-4 h-4" />
-                      Name *
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    {...register("name", {
-                      required: "Name is required",
-                      minLength: {
-                        value: 2,
-                        message: "Name must be at least 2 characters",
-                      },
-                    })}
-                    placeholder="Enter your name"
-                    className="input input-bordered w-full"
-                  />
-                  {errors.name && (
-                    <span className="text-error text-sm mt-1">
-                      {errors.name.message}
-                    </span>
-                  )}
-                </div>
-
-                {/* Email */}
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold flex items-center gap-2">
-                      <FiMail className="w-4 h-4" />
-                      Email *
-                    </span>
-                  </label>
-                  <input
-                    type="email"
-                    {...register("email")}
-                    className="input input-bordered w-full bg-base-300 cursor-not-allowed"
-                    disabled
-                  />
-                  <span className="text-xs text-base-content/50 mt-1">
-                    Email cannot be changed
-                  </span>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-semibold flex items-center gap-2">
-                    <FiFileText className="w-4 h-4" />
-                    Bio
-                  </span>
-                  <span className="label-text-alt text-base-content/50">
-                    {bioLength} / 500
-                  </span>
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Name */}
+              <div>
+                <label className="label font-semibold flex gap-2">
+                  <FiUser /> Name
                 </label>
-                <textarea
-                  {...register("bio", {
-                    maxLength: {
-                      value: 500,
-                      message: "Bio must be less than 500 characters",
-                    },
-                  })}
-                  placeholder="Write something about yourself..."
-                  className="textarea textarea-bordered h-32 w-full"
+                <input
+                  {...register("name", { required: "Name is required" })}
+                  className="input input-bordered w-full"
                 />
-                {errors.bio && (
-                  <span className="text-error text-sm mt-1">
-                    {errors.bio.message}
-                  </span>
+                {errors.name && (
+                  <p className="text-error text-sm">{errors.name.message}</p>
                 )}
               </div>
 
-              <div className="bg-info/10 border border-info/30 rounded-lg p-4">
-                <p className="text-sm text-info flex items-center gap-2">
-                  <span className="shrink-0"><FiInfo/></span>
-                  <span>
-                    <strong>Note:</strong> Your profile information will be
-                    visible to other users on the platform.
-                  </span>
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/profile")}
-                  className="btn btn-outline flex-1 px-4 py-2"
-                  disabled={isUpdating || isUploading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isUpdating || isUploading}
-                  className="btn btn-primary flex-1 px-4 py-2"
-                >
-                  {isUploading ? (
-                    <>
-                      <span className="loading loading-spinner loading-sm"></span>
-                      Uploading Image...
-                    </>
-                  ) : isUpdating ? (
-                    <>
-                      <span className="loading loading-spinner loading-sm"></span>
-                      Updating...
-                    </>
-                  ) : (
-                    "Update Profile"
-                  )}
-                </button>
+              {/* Email */}
+              <div>
+                <label className="label font-semibold flex gap-2">
+                  <FiMail /> Email
+                </label>
+                <input
+                  {...register("email")}
+                  disabled
+                  className="input input-bordered w-full bg-base-300"
+                />
               </div>
             </div>
-          </form>
-        </motion.div>
-      </div>
+
+            {/* Bio */}
+            <div>
+              <label className="label font-semibold flex justify-between">
+                <span className="flex gap-2">
+                  <FiFileText /> Bio
+                </span>
+                <span className="text-xs opacity-60">{bioLength}/500</span>
+              </label>
+              <textarea
+                {...register("bio", { maxLength: 500 })}
+                className="textarea textarea-bordered w-full h-32"
+              />
+            </div>
+
+            <div className="bg-info/10 border border-info/30 rounded-lg p-4 text-sm">
+              <FiInfo className="inline mr-2" />
+              Your profile information is visible to others.
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard/profile")}
+                className="btn btn-outline flex-1"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                disabled={isUploading || isUpdating}
+                className="btn btn-primary flex-1"
+              >
+                {isUploading || isUpdating ? "Updating..." : "Update Profile"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </motion.div>
     </div>
   );
 };

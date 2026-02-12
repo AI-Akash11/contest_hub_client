@@ -29,25 +29,24 @@ export const getContestStatus = (deadline) => {
   if (days > 0) {
     return {
       ended: false,
-      display: `${days}d ${hours}h left`
-    }
+      display: `${days}d ${hours}h left`,
+    };
   } else if (hours > 0) {
-    return { 
-      ended: false, 
-      display: `${hours}h ${minutes}m left` 
+    return {
+      ended: false,
+      display: `${hours}h ${minutes}m left`,
     };
   } else {
-    return { 
-      ended: false, 
-      display: `${minutes}m left` 
+    return {
+      ended: false,
+      display: `${minutes}m left`,
     };
   }
 };
 
-
 export const formatDeadline = (dateString) => {
   const date = new Date(dateString);
-  
+
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -57,8 +56,11 @@ export const formatDeadline = (dateString) => {
   });
 };
 
-export const saveOrUpdateUser = async (userData) =>{
-  const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/user`, userData)
+export const saveOrUpdateUser = async (userData) => {
+  const { data } = await axios.post(
+    `${import.meta.env.VITE_API_URL}/user`,
+    userData,
+  );
 
-  return data
-}
+  return data;
+};
