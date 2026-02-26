@@ -40,12 +40,12 @@ const LeaderBoard = () => {
 
         <div className="max-w-5xl mx-auto">
           {/* 🏆 Podium */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
             {/* 🥇 1st Place — always first on mobile */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card p-6 text-center order-1 sm:order-2 scale-105 border-2 border-primary"
+              className="glass-card p-6 text-center order-1 md:order-2 scale-105 border-2 border-primary"
             >
               <img
                 src={leaderboardData[0].avatar}
@@ -63,7 +63,7 @@ const LeaderBoard = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card p-5 text-center order-2 sm:order-1"
+              className="glass-card p-5 text-center order-2 md:order-1"
             >
               <img
                 src={leaderboardData[1].avatar}

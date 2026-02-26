@@ -1,5 +1,4 @@
 import Container from "../Container";
-import { AiOutlineMenu } from "react-icons/ai";
 import { useState } from "react";
 import { Link, NavLink } from "react-router";
 import useAuth from "../../../hooks/useAuth";
@@ -9,18 +8,45 @@ import { FiMoon, FiSun } from "react-icons/fi";
 import useRole from "../../../hooks/useRole";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { motion, AnimatePresence } from "framer-motion";
+
+const dropdownVariants = {
+  hidden: {
+    opacity: 0,
+    y: -8,
+    scale: 0.98,
+    pointerEvents: "none",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    pointerEvents: "auto",
+    transition: {
+      duration: 0.18,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -6,
+    scale: 0.98,
+    transition: {
+      duration: 0.12,
+      ease: "easeIn",
+    },
+  },
+};
 
 const Navbar = () => {
   const { user, logOut, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [role, isRoleLoading] = useRole();
   const axiosSecure = useAxiosSecure();
 
-  const {
-    data: userInfo,
-    isLoading: isUserInfoLoading,
-  } = useQuery({
+  const { data: userInfo, isLoading: isUserInfoLoading } = useQuery({
     queryKey: ["user", user?.email],
     enabled: !!user?.email && !loading,
     queryFn: async () => {
@@ -31,6 +57,7 @@ const Navbar = () => {
 
   const handleClickOutside = () => {
     if (isOpen) setIsOpen(false);
+    if (isHamburgerOpen) setIsHamburgerOpen(false);
   };
 
   const links = (
@@ -50,7 +77,6 @@ const Navbar = () => {
     </>
   );
 
-
   const getDisplayImage = () => {
     if (userInfo?.image) return userInfo.image;
     if (user?.photoURL) return user.photoURL;
@@ -69,123 +95,153 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed w-full bg-base-300 z-10 shadow-sm border-b border-white/10 rounded-b-2xl">
-      <div className="py-1">
-        <Container>
-          <div className="navbar">
-            <div className="navbar-start">
-              {/* Links Dropdown */}
-              <div className="dropdown text-accent">
-                <div
-                  tabIndex={0}
-                  role="button"
-                  className="btn btn-outline rounded-full border-base-content/30 mr-2 text-base-content md:hidden"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 6h16M4 12h8m-8 6h16"
-                    />
-                  </svg>
-                </div>
-                <ul
-                  tabIndex="-1"
-                  className="menu menu-sm dropdown-content bg-base-100 text-base-content font-bold rounded-box z-2 mt-3 w-48 p-2 shadow"
-                >
-                  {links}
-                </ul>
-              </div>
-
-              {/* Logo */}
-              <Link to="/" className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-amber-400 flex items-center justify-center">
-                  <span className="text-xl font-black text-base-100">C</span>
-                </div>
-                <span className="text-xl font-bold gradient-text hidden md:block">
-                  ContestHub
-                </span>
-              </Link>
-            </div>
-
-            <div className="navbar-center text-base-content hidden md:flex">
-              <ul className="font-bold px-1 menu menu-horizontal">{links}</ul>
-            </div>
-
-            <div className="navbar-end">
-              {/* Theme Toggle */}
-              <label className="flex items-center gap-2 cursor-pointer mr-3">
-                <FiSun
-                  className={`text-xl transition-colors duration-300 ${
-                    theme === "light"
-                      ? "text-yellow-400"
-                      : "text-base-content/50"
-                  }`}
+    <div className="fixed h-15 w-full bg-base-300 z-10 shadow-sm border-b border-white/10">
+      <Container>
+        <div className="navbar py-0">
+          <div className="navbar-start">
+            {/* Links Dropdown */}
+            <div>
+              <button
+                onClick={() => setIsHamburgerOpen(!isHamburgerOpen)}
+                role="button"
+                className="btn btn-outline rounded-2xl border-base-content/30 mr-2 md:hidden flex flex-col justify-center items-center gap-1.5 px-3.5 py-2"
+              >
+                <motion.span
+                  className="block w-5 h-0.5 bg-base-content"
+                  animate={
+                    isHamburgerOpen
+                      ? { rotate: 45, y: 10 }
+                      : { rotate: 0, y: 0 }
+                  }
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
                 />
-
-                <input
-                  type="checkbox"
-                  className="toggle toggle-sm bg-base-200 border-base-content"
-                  checked={theme === "dark"}
-                  onChange={toggleTheme}
-                  aria-label="Toggle theme"
+                <motion.span
+                  className="block w-5 h-0.5 bg-base-content"
+                  animate={isHamburgerOpen ? { opacity: 0 } : { opacity: 1 }}
+                  transition={{ duration: 0.15 }}
                 />
-
-                <FiMoon
-                  className={`text-xl transition-colors duration-300 ${
-                    theme === "dark"
-                      ? "text-indigo-400"
-                      : "text-base-content/50"
-                  }`}
+                <motion.span
+                  className="block w-5 h-0.5 bg-base-content"
+                  animate={
+                    isHamburgerOpen
+                      ? { rotate: -45, y: -6 }
+                      : { rotate: 0, y: 0 }
+                  }
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
                 />
-              </label>
+              </button>
 
-              {/* User Dropdown */}
-              <div className="relative">
-                <div className="flex flex-row items-center gap-3">
-                  {/* Dropdown */}
-                  <div
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-lg shadow-md transition"
-                  >
-                    <div className="relative">
-                      {/* image */}
-                      <img
-                        className="rounded-full w-10 h-10 object-cover ring-2 ring-base-content/20"
-                        referrerPolicy="no-referrer"
-                        src={user ? getDisplayImage() : avatarImg}
-                        alt="profile"
-                      />
-                      {/* green dot */}
-                      {user && (
-                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-base-300"></span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Dropdown Menu */}
-                {isOpen && (
+              <AnimatePresence>
+                {isHamburgerOpen && (
                   <>
-                    <div
+                    <motion.div
                       className="fixed inset-0 z-10"
                       onClick={handleClickOutside}
-                    ></div>
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    ></motion.div>
 
-                    {/* Dropdown */}
-                    <div className="absolute rounded-xl shadow-md w-64 bg-base-100 overflow-hidden right-0 top-12 text-sm z-20 border border-base-content/10">
+                    <motion.ul
+                      className="menu menu-sm dropdown-content bg-base-100 text-base-content font-bold rounded-box z-20 mt-3 w-48 p-2 shadow absolute"
+                      variants={dropdownVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      {links}
+                    </motion.ul>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Logo */}
+            <Link to="/" className="md:flex items-center gap-2 hidden">
+              <div className="w-8 lg:w-10 h-8 lg:h-10 rounded-xl bg-linear-to-br from-primary to-amber-400 flex items-center justify-center">
+                <span className="md:text-xl font-black text-base-100">C</span>
+              </div>
+              <span className="text-lg lg:text-xl font-bold gradient-text">
+                ContestHub
+              </span>
+            </Link>
+          </div>
+
+          <div className="navbar-center text-base-content hidden md:flex">
+            <ul className="font-bold px-1 menu menu-horizontal">{links}</ul>
+          </div>
+
+          <div className="navbar-end">
+            {/* Theme Toggle */}
+            <label className="flex items-center gap-2 mr-3">
+              <FiSun
+                className={`text-xl transition-colors duration-300 ${
+                  theme === "light" ? "text-yellow-400" : "text-base-content/50"
+                }`}
+              />
+
+              <input
+                type="checkbox"
+                className="toggle toggle-sm bg-base-200 border-base-content cursor-pointer"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+                aria-label="Toggle theme"
+              />
+
+              <FiMoon
+                className={`text-xl transition-colors duration-300 ${
+                  theme === "dark" ? "text-indigo-400" : "text-base-content/50"
+                }`}
+              />
+            </label>
+
+            {/* User Dropdown */}
+            <div className="relative">
+              <div className="flex flex-row items-center gap-3">
+                {/* Dropdown */}
+                <div
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-lg shadow-md transition"
+                >
+                  <div className="relative">
+                    {/* image */}
+                    <img
+                      className="rounded-full w-10 h-10 object-cover ring-2 ring-base-content/20"
+                      referrerPolicy="no-referrer"
+                      src={user ? getDisplayImage() : avatarImg}
+                      alt="profile"
+                    />
+                    {/* green dot */}
+                    {user && (
+                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-base-300"></span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {isOpen && (
+                  <>
+                    <motion.div
+                      className="fixed inset-0 z-10"
+                      onClick={handleClickOutside}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    ></motion.div>
+
+                    <motion.div
+                      className="absolute rounded-xl shadow-md w-64 bg-base-100 overflow-hidden right-0 top-12 text-sm z-20 border border-base-content/10"
+                      variants={dropdownVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
                       <div className="flex flex-col cursor-pointer">
                         {user && !loading ? (
                           <>
-                            {/* User Info */}
-                            <div className="px-4 py-3 bg-base-200 border-b border-base-content/10">
+                            <div className="px-4 py-3 bg-base-100 border-b border-base-content/10">
                               <div className="flex items-center gap-3">
                                 <img
                                   src={getDisplayImage()}
@@ -212,64 +268,32 @@ const Navbar = () => {
                               </div>
                             </div>
 
-                            {/* Email */}
                             <div className="px-4 py-2 border-b border-base-content/10">
                               <p className="text-xs text-base-content/60 truncate">
                                 {user?.email}
                               </p>
                             </div>
 
-                            {/* Dashboard Link */}
                             <Link
                               to="/dashboard"
                               onClick={() => setIsOpen(false)}
                               className="px-4 py-3 hover:bg-base-200 transition font-semibold flex items-center gap-2"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                                />
-                              </svg>
                               Dashboard
                             </Link>
 
-                            {/* Logout Button */}
                             <div
                               onClick={() => {
                                 logOut();
                                 setIsOpen(false);
                               }}
-                              className="px-4 py-3 hover:bg-base-200 transition font-semibold text-error flex items-center gap-2"
+                              className="px-4 py-3 hover:bg-base-200 transition font-semibold text-error"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                                />
-                              </svg>
                               Logout
                             </div>
                           </>
                         ) : (
                           <>
-                            {/* Login/Signup */}
                             <Link
                               to="/login"
                               onClick={() => setIsOpen(false)}
@@ -287,14 +311,14 @@ const Navbar = () => {
                           </>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                   </>
                 )}
-              </div>
+              </AnimatePresence>
             </div>
           </div>
-        </Container>
-      </div>
+        </div>
+      </Container>
     </div>
   );
 };

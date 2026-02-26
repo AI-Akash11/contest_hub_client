@@ -7,7 +7,7 @@ const MainLayout = () => {
     <div>
       <ScrollToTop></ScrollToTop>
       <Navbar />
-      <div className='pt-18 min-h-[calc(100vh-68px)]'>
+      <div className='pt-15 min-h-[calc(100vh-300px)]'>
         <Outlet />
       </div>
       <Footer />

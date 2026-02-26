@@ -27,17 +27,19 @@ const SignUp = () => {
     const imageFile = image[0];
 
     try {
-          setImageLoading(true)
+      setImageLoading(true);
 
       const imageURL = await imageUpload(imageFile);
-          setImageLoading(false)
-
-
+      setImageLoading(false);
 
       //2. User Registration
       const result = await createUser(email, password);
 
-      await saveOrUpdateUser({ name, email: email.toLowerCase(), image: imageURL });
+      await saveOrUpdateUser({
+        name,
+        email: email.toLowerCase(),
+        image: imageURL,
+      });
 
       //3. Save username & profile photo
       await updateUserProfile(name, imageURL);
@@ -53,10 +55,12 @@ const SignUp = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
-      <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-base-200 text-base-content">
+      <div className="flex flex-col max-w-md p-6 rounded-md md:p-10 bg-base-200 text-base-content">
         <div className="mb-8 text-center">
           <h1 className="my-3 text-4xl font-bold">Sign Up</h1>
-          <p className="text-sm text-base-content/50">Welcome to Contest Hub.</p>
+          <p className="text-sm text-base-content/50">
+            Welcome to Contest Hub.
+          </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
@@ -194,11 +198,11 @@ const SignUp = () => {
           </div>
         </form>
         <div className="flex items-center pt-4 space-x-1">
-          <div className="flex-1 h-px sm:w-16 dark:bg-base-300"></div>
+          <div className="flex-1 h-px md:w-16 dark:bg-base-300"></div>
           <p className="px-3 text-sm dark:text-base-content/50">
             Signup with social accounts
           </p>
-          <div className="flex-1 h-px sm:w-16 dark:bg-base-300"></div>
+          <div className="flex-1 h-px md:w-16 dark:bg-base-300"></div>
         </div>
         <SocialLogin></SocialLogin>
         <p className="px-6 text-sm text-center text-base-content/50">

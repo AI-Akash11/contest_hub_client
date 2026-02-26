@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { FiSearch, FiTrendingUp, FiAward, FiUsers } from "react-icons/fi";
 import CountUp from "react-countup";
-import Container from "../Shared/Container";
+import Container from "../../Shared/Container";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import SectionBadge from "../SectionBadge";
 
 const stats = [
   {
@@ -43,28 +44,21 @@ const Banner = () => {
     }
   };
   return (
-    <section className="overflow-hidden bg-linear-to-br from-base-200 via-accent/5 to-primary/10">
+    <section className="overflow-hidden bg-linear-to-br from-base-200 via-accent/10 to-primary/20 mb-15 lg:mb-20">
       <Container>
-        <div className="min-h-[65vh] flex items-center py-5 md:py-10 lg:py-20">
-          <div className="max-w-4xl mx-auto text-center">
+        <div className="min-h-[50vh] flex items-center py-10 lg:py-20">
+          <div className="mx-auto text-center">
             {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full mb-8"
-            >
-              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-primary">
-                #1 Contest Platform for Creators
-              </span>
-            </motion.div>
+            {/* <SectionBadge color="primary">
+              #1 Contest Platform for Creators
+            </SectionBadge> */}
 
             {/* Heading */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-6 leading-tight"
             >
               Unleash Your <span className="gradient-text">Creative</span>
               <br />
@@ -76,7 +70,7 @@ const Banner = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-base-content/70 mb-10 max-w-2xl mx-auto"
+              className="md:text-lg text-base-content/60 mb-10 max-w-2xl mx-auto"
             >
               Join thousands of talented creators in exciting competitions.
               Showcase your skills, compete globally, and win amazing cash
@@ -93,15 +87,16 @@ const Banner = () => {
               <form onSubmit={handleSearch}>
                 <div className="relative">
                   <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/60" />
-                  <button 
-                  type="submit"
-                  className="absolute right-2 top-2 px-4 py-2 bg-primary text-base-100 font-semibold rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition duration-200 cursor-pointer">
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-2 px-4 py-2 bg-primary text-base-100 font-semibold rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition duration-200 cursor-pointer"
+                  >
                     Search
                   </button>
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e)=> setSearchQuery(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search contests by type..."
                     className="w-full pl-14 pr-24 py-4 bg-base-300 rounded-2xl border border-base-content/10 focus:outline-primary"
                   />
@@ -114,18 +109,18 @@ const Banner = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto"
+              className="grid grid-cols-3 gap-2 md:gap-6 max-w-3xl mx-auto"
             >
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-4 p-4 bg-base-300 rounded-2xl"
+                  className="flex flex-col md:flex-row items-center gap-1 md:gap-4 p-4 bg-base-300 rounded-2xl"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <div className="w-15 md:w-12 h-15 md:h-12 rounded-xl bg-primary/20 flex items-center justify-center">
                     <stat.icon className="w-6 h-6 text-primary" />
                   </div>
-                  <div className="text-left">
-                    <div className="text-2xl font-bold">
+                  <div className="text-center md:text-left">
+                    <div className="text-xl md:text-2xl font-bold">
                       {stat.prefix}
                       <CountUp
                         end={stat.value}
@@ -134,7 +129,7 @@ const Banner = () => {
                       />
                       {stat.suffix}
                     </div>
-                    <div className="text-sm text-base-content/70">
+                    <div className="text-[10px] md:text-sm text-base-content/70">
                       {stat.label}
                     </div>
                   </div>

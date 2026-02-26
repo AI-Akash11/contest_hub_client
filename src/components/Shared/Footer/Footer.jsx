@@ -120,22 +120,22 @@ const Footer = () => {
               <h3 className="font-bold text-lg mb-4">Support</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/contact-us" className="text-base-content/70 hover:text-primary transition">
                     Contact Us
                   </Link>
                 </li>
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/faq" className="text-base-content/70 hover:text-primary transition">
                     FAQ
                   </Link>
                 </li>
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/help-center" className="text-base-content/70 hover:text-primary transition">
                     Help Center
                   </Link>
                 </li>
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/contest-guidelines" className="text-base-content/70 hover:text-primary transition">
                     Contest Guidelines
                   </Link>
                 </li>
@@ -147,22 +147,22 @@ const Footer = () => {
               <h3 className="font-bold text-lg mb-4">Legal</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/privacy-policy" className="text-base-content/70 hover:text-primary transition">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/terms-of-service" className="text-base-content/70 hover:text-primary transition">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/cookie-policy" className="text-base-content/70 hover:text-primary transition">
                     Cookie Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/coming-soon" className="text-base-content/70 hover:text-primary transition">
+                  <Link to="/refund-policy" className="text-base-content/70 hover:text-primary transition">
                     Refund Policy
                   </Link>
                 </li>
@@ -178,13 +178,13 @@ const Footer = () => {
               </p>
 
               <div className="flex gap-6 text-sm">
-                <Link to="/coming-soon" className="text-base-content/60 hover:text-primary transition">
+                <Link to="/sitemap" className="text-base-content/60 hover:text-primary transition">
                   Sitemap
                 </Link>
-                <Link to="/coming-soon" className="text-base-content/60 hover:text-primary transition">
+                <Link to="/accessibility" className="text-base-content/60 hover:text-primary transition">
                   Accessibility
                 </Link>
-                <Link to="/coming-soon" className="text-base-content/60 hover:text-primary transition">
+                <Link to="/careers" className="text-base-content/60 hover:text-primary transition">
                   Careers
                 </Link>
               </div>

@@ -58,7 +58,7 @@ const AdminStatistics = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
         {/* Approved Contests */}
         <div className="relative bg-base-300 rounded-xl shadow-md p-6 overflow-hidden">
           <div className="absolute top-4 right-4 text-success">

@@ -28,7 +28,7 @@ const InDevelopment = ({
               {message}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col md:flex-row gap-4 justify-center lg:justify-start">
               <Link
                 to="/"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-base-100 font-semibold hover:scale-105 transition"

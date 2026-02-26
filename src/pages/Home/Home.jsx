@@ -1,7 +1,8 @@
-import Banner from "../../components/Home/Banner"
-import FeaturesSection from "../../components/Home/FeaturesSection"
-import PopularContests from "../../components/Home/PopularContests"
-import RecentWinners from "../../components/Home/RecentWinners"
+
+import Banner from "../../components/Home/sections/Banner"
+import FeaturesSection from "../../components/Home/sections/FeaturesSection"
+import PopularContests from "../../components/Home/sections/PopularContests"
+import RecentWinners from "../../components/Home/sections/RecentWinners"
 
 const Home = () => {
   return (

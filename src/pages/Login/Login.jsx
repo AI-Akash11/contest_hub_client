@@ -39,7 +39,7 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
-      <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-base-200 text-base-content">
+      <div className="flex flex-col max-w-md p-6 rounded-md md:p-10 bg-base-200 text-base-content">
         <div className="mb-8 text-center">
           <h1 className="my-3 text-4xl font-bold">Log In</h1>
           <p className="text-sm text-base-content/50">
@@ -119,11 +119,11 @@ const Login = () => {
           </button>
         </div>
         <div className="flex items-center pt-4 space-x-1">
-          <div className="flex-1 h-px sm:w-16 dark:bg-base-300"></div>
+          <div className="flex-1 h-px md:w-16 dark:bg-base-300"></div>
           <p className="px-3 text-sm dark:text-base-content/50">
             Login with social accounts
           </p>
-          <div className="flex-1 h-px sm:w-16 dark:bg-base-300"></div>
+          <div className="flex-1 h-px md:w-16 dark:bg-base-300"></div>
         </div>
         <SocialLogin></SocialLogin>
         <p className="px-6 text-sm text-center text-base-content/50">

@@ -55,7 +55,7 @@ const Profile = () => {
           {/* Profile Content */}
           <div className="px-8 pb-8">
             {/* Avatar & Name */}
-            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16">
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-75"></div>
                 <img
@@ -70,7 +70,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="flex-1 text-center sm:text-left mt-8 sm:mt-0">
+              <div className="flex-1 text-center md:text-left mt-8 md:mt-0">
                 <h1 className="text-2xl md:text-3xl font-bold mb-1">
                   {userInfo.name}
                 </h1>
@@ -129,7 +129,7 @@ const Profile = () => {
             <div className="mt-8">
               <Link
                 to="/dashboard/update-profile"
-                className="w-full sm:w-auto btn btn-primary gap-2"
+                className="w-full md:w-auto btn btn-primary gap-2"
               >
                 <FiEdit2 className="w-4 h-4" />
                 Update Profile

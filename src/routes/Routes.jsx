@@ -27,6 +27,17 @@ import CreatorRoute from "./CreatorRoute";
 import AdminRoute from "./AdminRoute";
 import InDevelopment from "../components/Shared/InDevelopment/InDevelopment";
 import UpdateProfile from "../pages/Dashboard/Common/UpdateProfile";
+import Accessibility from "../pages/StaticPages/Accessibility";
+import Careers from "../pages/StaticPages/Careers";
+import ContactUs from "../pages/StaticPages/ContactUs";
+import ContestGuidelines from "../pages/StaticPages/ContestGuidelines";
+import CookiePolicy from "../pages/StaticPages/CookiePolicy";
+import FAQ from "../pages/StaticPages/FAQ";
+import HelpCenter from "../pages/StaticPages/HelpCenter";
+import PrivacyPolicy from "../pages/StaticPages/PrivacyPolicy";
+import RefundPolicy from "../pages/StaticPages/RefundPolicy";
+import Sitemap from "../pages/StaticPages/Sitemap";
+import TermsOfService from "../pages/StaticPages/TermsOfService";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +76,50 @@ export const router = createBrowserRouter([
       {
         path: "/coming-soon",
         element: <InDevelopment />,
+      },
+      {
+        path: "/accessibility",
+        Component: Accessibility
+      },
+      {
+        path: "/careers",
+        Component: Careers
+      },
+      {
+        path: "/contact-us",
+        Component: ContactUs
+      },
+      {
+        path: "/contest-guidelines",
+        Component: ContestGuidelines
+      },
+      {
+        path: "/cookie-policy",
+        Component: CookiePolicy
+      },
+      {
+        path: "/faq",
+        Component: FAQ
+      },
+      {
+        path: "/help-center",
+        Component: HelpCenter
+      },
+      {
+        path: "/privacy-policy",
+        Component: PrivacyPolicy
+      },
+      {
+        path: "/refund-policy",
+        Component: RefundPolicy
+      },
+      {
+        path: "/sitemap",
+        Component: Sitemap
+      },
+      {
+        path: "/terms-of-service",
+        Component: TermsOfService
       },
     ],
   },
