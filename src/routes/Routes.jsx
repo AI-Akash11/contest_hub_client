@@ -38,6 +38,7 @@ import PrivacyPolicy from "../pages/StaticPages/PrivacyPolicy";
 import RefundPolicy from "../pages/StaticPages/RefundPolicy";
 import Sitemap from "../pages/StaticPages/Sitemap";
 import TermsOfService from "../pages/StaticPages/TermsOfService";
+import Blog from "../pages/Blog/Blog";
 
 export const router = createBrowserRouter([
   {
@@ -72,6 +73,10 @@ export const router = createBrowserRouter([
       {
         path: "/about",
         element: <About></About>,
+      },
+      {
+        path: "/blog",
+        Component: Blog ,
       },
       {
         path: "/coming-soon",

@@ -64,7 +64,7 @@ const PopularContests = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/all-contests"
-                className="px-8 py-3 rounded-xl bg-primary text-base-100 font-semibold shadow-lg hover:bg-primary/90 transition"
+                className="primary-btn"
               >
                 Show All Contests
               </Link>

@@ -171,7 +171,7 @@ const RecentWinners = () => {
             href="/all-contests"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-block bg-linear-to-r from-primary/90 to-primary px-5 py-2.5 rounded-xl text-base-100 font-bold hover:shadow-primary/20 hover:shadow-2xl transition duration-200"
+            className="primary-btn"
           >
             Start Competing Now
           </motion.a>
