@@ -6,23 +6,27 @@ import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import ErrorPage from "../ErrorPage";
 
 const LeaderBoard = () => {
-  const {data: leaderboardData = [], isLoading, isError} = useQuery({
+  const {
+    data: leaderboardData = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["leaderboard"],
     queryFn: async () => {
       const res = await axios(`${import.meta.env.VITE_API_URL}/leaderboard`);
-      return res.data
+      return res.data;
     },
   });
-  if(isLoading){
-    return <LoadingSpinner></LoadingSpinner>
+  if (isLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
-  if(isError){
-    return <ErrorPage></ErrorPage>
+  if (isError) {
+    return <ErrorPage></ErrorPage>;
   }
-  console.log(leaderboardData)
+  console.log(leaderboardData);
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen py-10 md:py-15">
       <Container>
         {/* Header */}
         <motion.div
@@ -30,10 +34,10 @@ const LeaderBoard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">
             <span className="gradient-text">Leaderboard</span>
           </h1>
-          <p className="text-base-content/70">
+          <p className="text-base-content/70 text-sm  md:text-base ">
             Top creators ranked by Prize Money
           </p>
         </motion.div>

@@ -9,19 +9,21 @@ import {
   FiTrendingUp,
 } from "react-icons/fi";
 import Container from "../../components/Shared/Container";
-import CountUp from 'react-countup';
+import CountUp from "react-countup";
+import SectionTitle from "../../components/Home/SectionTitle";
 
 const About = () => {
   const stats = [
-    { label: "Active Users", value: 50000, icon: <FiUsers /> },
-    { label: "Contests Hosted", value: 1200, icon: <FiAward /> },
+    { label: "Active Users", value: 50, suffix: " K+", icon: <FiUsers /> },
+    { label: "Contests Hosted", value: 12, suffix: " K+", icon: <FiAward /> },
     {
       label: "Prize Distributed",
-      value: 2500000,
+      value: "25",
       prefix: "$",
+      suffix: " K+",
       icon: <FiTrendingUp />,
     },
-    { label: "Countries", value: 85, icon: <FiGlobe /> },
+    { label: "Countries", value: 85, suffix: " +", icon: <FiGlobe /> },
   ];
 
   const values = [
@@ -47,7 +49,7 @@ const About = () => {
 
   return (
     <Container>
-      <section className="relative py-12 overflow-hidden ">
+      <section className="relative py-10 md:py-15 overflow-hidden ">
         <div className="absolute inset-0 bg-base-200 " />
         <div className="container mx-auto px-4 relative">
           <motion.div
@@ -55,10 +57,10 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
               About <span className="gradient-text">ContestHub</span>
             </h1>
-            <p className="text-xl text-base-content/70">
+            <p className="text-sm  md:text-base  text-base-content/70">
               We're on a mission to democratize creative competitions and give
               talented individuals worldwide the platform they deserve.
             </p>
@@ -66,8 +68,8 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-base-300 rounded-xl">
-        <div className="container mx-auto px-4">
+      <section className="bg-base-300 rounded-xl">
+        <div className="container mx-auto p-4 lg:p-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <motion.div
@@ -76,7 +78,7 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center"
+                className="text-center bg-base-300 border border-secondary p-4 rounded-2xl"
               >
                 <div className="text-4xl text-primary mb-2 flex justify-center">
                   {stat.icon}
@@ -85,11 +87,12 @@ const About = () => {
                   {stat.prefix}
                   <CountUp
                     end={stat.value}
-                    duration={3}
+                    duration={2}
                     separator=","
                     enableScrollSpy
                     scrollSpyOnce
                   />
+                  {stat.suffix}
                 </div>
                 <p className="text-base-content/70">{stat.label}</p>
               </motion.div>
@@ -98,17 +101,15 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-20">
-        <div className="container mx-auto px-4">
+      <section className="py-10 md:py-15 lg:py-20">
+        <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-base-content mb-4">
-              Our Values
-            </h2>
+            <SectionTitle>Our Values</SectionTitle>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((value, index) => (
@@ -118,7 +119,7 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-base-300 border border-border rounded-xl p-8 text-center"
+                className="bg-base-300 border border-secondary rounded-xl p-8 text-center"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-base-200 flex items-center justify-center">
                   {value.icon}

@@ -14,10 +14,10 @@ const AllContests = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isDragging, setIsDragging] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const hasReadUrlParams = useRef(false);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     if (!hasReadUrlParams.current) {
@@ -40,7 +40,7 @@ const AllContests = () => {
     queryKey: ["allContests"],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/all-contests`
+        `${import.meta.env.VITE_API_URL}/all-contests`,
       );
       return res.data;
     },
@@ -61,7 +61,7 @@ const AllContests = () => {
     // Filter by category
     if (selectedCategory !== "All") {
       filtered = filtered.filter(
-        (contest) => contest.contestType === selectedCategory
+        (contest) => contest.contestType === selectedCategory,
       );
     }
 
@@ -72,7 +72,7 @@ const AllContests = () => {
         (contest) =>
           contest.name.toLowerCase().includes(query) ||
           contest.contestType.toLowerCase().includes(query) ||
-          contest.creator?.name.toLowerCase().includes(query)
+          contest.creator?.name.toLowerCase().includes(query),
       );
     }
 
@@ -96,9 +96,25 @@ const AllContests = () => {
     setCurrentPage(1);
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Slider scroll functions
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
   };
 
   if (isLoading) {
@@ -113,16 +129,16 @@ const AllContests = () => {
     <Container>
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <section className="py-12 md:py-16">
+        <section className="pt-10 md:pt-15">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-8"
           >
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Explore All <span className="gradient-text">Contests</span>
             </h1>
-            <p className="text-base-content/70 max-w-2xl mx-auto">
+            <p className="text-sm  md:text-base text-base-content/70 max-w-2xl mx-auto">
               Discover a wide range of creative competitions across various
               categories. Find the perfect contest that matches your skills and
               interests.
@@ -134,7 +150,7 @@ const AllContests = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="max-w-xl mx-auto mb-8"
+            className="max-w-xl mx-auto mb-6"
           >
             <div className="relative">
               <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/80" />
@@ -156,35 +172,44 @@ const AllContests = () => {
             </div>
           </motion.div>
 
-          {/* Draggable Category Slider */}
+          {/* Category Slider with Arrows */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-4 relative"
+            className="mb-6 relative"
           >
+            {/* Left Arrow */}
+            <button
+              onClick={scrollLeft}
+              className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-base-100 hover:bg-primary flex items-center justify-center transition"
+              aria-label="Scroll left"
+            >
+              <FiChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Right Arrow */}
+            <button
+              onClick={scrollRight}
+              className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-base-100 hover:bg-primary flex items-center justify-center transition"
+              aria-label="Scroll right"
+            >
+              <FiChevronRight className="w-4 h-4" />
+            </button>
+
             {/* Scrollable Container */}
-            <div className="overflow-hidden px-4">
-              <motion.div
-                drag="x"
-                dragConstraints={{ left: -1000, right: 0 }}
-                dragElastic={0.1}
-                dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-                onDragStart={() => setIsDragging(true)}
-                onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
-                className="flex gap-3 py-4 cursor-grab active:cursor-grabbing"
-              >
+            <div
+              ref={scrollRef}
+              className="overflow-x-auto scrollbar-hide px-8"
+            >
+              <div className="flex gap-3 py-4 min-w-max">
                 {uniqueCategories.map((category) => (
                   <motion.button
                     key={category}
-                    onClick={(e) => {
-                      if (!isDragging) {
-                        setSelectedCategory(category);
-                      }
-                    }}
-                    whileHover={{ scale: isDragging ? 1 : 1.05 }}
-                    whileTap={{ scale: isDragging ? 1 : 0.95 }}
-                    className={`px-4 py-2 rounded-full font-medium text-sm transition-all whitespace-nowrap flex-shrink-0 select-none ${
+                    onClick={() => setSelectedCategory(category)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`px-4 py-2 rounded-full font-medium text-sm transition-all whitespace-nowrap flex-shrink-0 ${
                       selectedCategory === category
                         ? "bg-primary text-base-100 shadow-lg"
                         : "bg-base-300 text-base-content/90 hover:bg-base-content/10"
@@ -195,16 +220,15 @@ const AllContests = () => {
                       <span className="ml-2 text-xs opacity-70">
                         (
                         {
-                          allContests.filter(
-                            (c) => c.contestType === category
-                          ).length
+                          allContests.filter((c) => c.contestType === category)
+                            .length
                         }
                         )
                       </span>
                     )}
                   </motion.button>
                 ))}
-              </motion.div>
+              </div>
             </div>
           </motion.div>
 
@@ -254,8 +278,7 @@ const AllContests = () => {
                 contests
                 {searchQuery && (
                   <span className="ml-2 text-sm">
-                    for "
-                    <span className="font-semibold">{searchQuery}</span>"
+                    for "<span className="font-semibold">{searchQuery}</span>"
                   </span>
                 )}
               </p>
@@ -281,7 +304,7 @@ const AllContests = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-12">
+              <div className="flex justify-center items-center gap-2 mt-6">
                 {/* Previous Button */}
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -320,16 +343,13 @@ const AllContests = () => {
                         page === currentPage + 2
                       ) {
                         return (
-                          <span
-                            key={page}
-                            className="flex items-center px-2"
-                          >
+                          <span key={page} className="flex items-center px-2">
                             ...
                           </span>
                         );
                       }
                       return null;
-                    }
+                    },
                   )}
                 </div>
 

@@ -40,7 +40,7 @@ const Footer = () => {
                   href="https://facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-base-300 hover:bg-primary hover:text-base-100 transition flex items-center justify-center"
+                  className="w-9 h-9 rounded-lg bg-[#1877f2] hover:bg-primary text-white hover:text-base-100 transition flex items-center justify-center"
                   aria-label="Facebook"
                 >
                   <FaFacebookF className="w-4 h-4" />
@@ -50,7 +50,7 @@ const Footer = () => {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-base-300 hover:bg-primary hover:text-base-100 transition flex items-center justify-center"
+                  className="w-9 h-9 rounded-lg bg-[#1DA1F2] hover:bg-primary text-white hover:text-base-100 transition flex items-center justify-center"
                   aria-label="Twitter"
                 >
                   <FaTwitter className="w-4 h-4" />
@@ -60,7 +60,7 @@ const Footer = () => {
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-base-300 hover:bg-primary hover:text-base-100 transition flex items-center justify-center"
+                  className="w-9 h-9 rounded-lg bg-[#E1306C] hover:bg-primary text-white hover:text-base-100 transition flex items-center justify-center"
                   aria-label="Instagram"
                 >
                   <FaInstagram className="w-4 h-4" />
@@ -70,7 +70,7 @@ const Footer = () => {
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-base-300 hover:bg-primary hover:text-base-100 transition flex items-center justify-center"
+                  className="w-9 h-9 rounded-lg bg-[#0a66c2] hover:bg-primary text-white hover:text-base-100 transition flex items-center justify-center"
                   aria-label="LinkedIn"
                 >
                   <FaLinkedinIn className="w-4 h-4" />
@@ -80,7 +80,7 @@ const Footer = () => {
                   href="https://github.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-base-300 hover:bg-primary hover:text-base-100 transition flex items-center justify-center"
+                  className="w-9 h-9 rounded-lg bg-black hover:bg-primary text-white hover:text-base-100 transition flex items-center justify-center"
                   aria-label="GitHub"
                 >
                   <FaGithub className="w-4 h-4" />

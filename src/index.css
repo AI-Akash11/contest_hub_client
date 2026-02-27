@@ -98,3 +98,7 @@ a.active {
   -ms-user-select: none;
   user-select: none;
 }
+
+.glass-card {
+  @apply bg-base-100/60 backdrop-blur-xl border border-base-content/10 rounded-2xl shadow-xl
+}
