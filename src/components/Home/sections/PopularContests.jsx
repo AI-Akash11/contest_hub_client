@@ -54,7 +54,7 @@ const PopularContests = () => {
 
         {/* Contests Grid */}
         <section >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
             {popularContests.map((contest) => (
               <ContestCard key={contest._id} contest={contest} />
             ))}

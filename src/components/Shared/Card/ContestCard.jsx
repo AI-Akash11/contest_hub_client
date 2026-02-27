@@ -34,7 +34,7 @@ const ContestCard = ({ contest }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.4 }}
-      className="group overflow-hidden rounded-2xl bg-base-300 shadow"
+      className="group overflow-hidden rounded-2xl bg-base-300 shadow h-full"
     >
       {/* Image */}
       <div className="relative h-48 overflow-hidden">

@@ -78,7 +78,7 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center bg-base-300 border border-secondary p-4 rounded-2xl"
+                className="text-center bg-base-100 p-4 rounded-2xl hover:scale-103 duration-300 shadow-xl"
               >
                 <div className="text-4xl text-primary mb-2 flex justify-center">
                   {stat.icon}
@@ -109,7 +109,7 @@ const About = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <SectionTitle>Our Values</SectionTitle>
+            <SectionTitle>Our <span className="gradient-text">Values</span></SectionTitle>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((value, index) => (
@@ -119,7 +119,7 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-base-300 border border-secondary rounded-xl p-8 text-center"
+                className="bg-base-300 rounded-xl p-8 text-center hover:scale-103 duration-300 shadow-xl"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-base-200 flex items-center justify-center">
                   {value.icon}
