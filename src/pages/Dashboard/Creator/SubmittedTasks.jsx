@@ -64,9 +64,9 @@ const SubmittedTasks = () => {
   if (isError) return <ErrorPage />;
 
   return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-6">
-        Contest Submissions ({submissions.length})
+    <div className="container mx-auto md:px-4 py-8">
+      <h2 className="text-3xl font-bold mb-6">
+        <span className="gradient-text">Contest Submissions ({submissions.length})</span>
       </h2>
 
       {submissions.length === 0 ? (

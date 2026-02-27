@@ -21,8 +21,8 @@ const MyParticipated = () => {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="py-4">
+    <div className="container mx-auto md:px-4 py-8">
+
         <div className="mb-6">
           <h2 className="text-3xl font-bold mb-2">
             My Participated <span className="gradient-text">Contests</span>
@@ -69,7 +69,7 @@ const MyParticipated = () => {
 
                   {/* Payment Status */}
                   <td className="px-6 py-4">
-                    <span className="badge badge-primary badge-outline px-4 py-3 text-sm font-semibold">
+                    <span className="badge badge-primary badge-outline px-4 py-3 md:py-6 text-sm font-semibold">
                       Paid ${item.price}
                     </span>
                   </td>
@@ -153,7 +153,6 @@ const MyParticipated = () => {
             ))
           )}
         </div>
-      </div>
     </div>
   );
 };

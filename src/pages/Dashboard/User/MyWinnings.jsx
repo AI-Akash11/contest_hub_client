@@ -20,8 +20,7 @@ const MyWinnings = () => {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="py-4">
+    <div className="container mx-auto md:px-4 py-8">
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-3xl font-bold mb-2">
@@ -69,7 +68,7 @@ const MyWinnings = () => {
 
                   {/* Result (badge-style preserved) */}
                   <td className="px-6 py-4">
-                    <span className="badge badge-success badge-outline px-4 py-3 text-sm font-semibold">
+                    <span className="badge badge-secondary badge-outline px-4 py-6 text-sm font-semibold">
                       Won ${item.prize}
                     </span>
                   </td>
@@ -78,7 +77,7 @@ const MyWinnings = () => {
                   <td className="px-6 py-4">
                     <Link
                       to={`/contest/${item.contestId}`}
-                      className="text-primary font-medium hover:underline"
+                      className="text-secondary font-medium hover:underline"
                     >
                       View Contest
                     </Link>
@@ -99,7 +98,6 @@ const MyWinnings = () => {
             </tbody>
           </table>
         </div>
-      </div>
     </div>
   );
 };

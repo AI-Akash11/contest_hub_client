@@ -80,7 +80,7 @@ const CreatorRequests = () => {
   }
 
   return (
-    <div className="bg-base-200 rounded-2xl shadow-xl p-8">
+    <div className="container mx-auto md:px-4 py-8">
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-3xl font-bold mb-2">

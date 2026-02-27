@@ -2,7 +2,7 @@ import AddContestForm from "../../../components/Form/AddContestForm";
 
 const AddContest = () => {
   return (
-    <div>
+    <div className="container mx-auto">
       {/* Form */}
       <AddContestForm></AddContestForm>
     </div>

@@ -51,24 +51,24 @@ const BecomeCreatorForm = () => {
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto md:px-4 py-8">
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-3xl font-bold mb-2">
           Become a <span className="gradient-text">Contest</span> Creator
         </h2>
-        <p className="text-base-content/70">
+        <p className="text-sm md:text-base text-base-content/70">
           Get access to create contests, manage submissions, and select winners
           on ContestHub.
         </p>
       </div>
 
-      <div className="my-6 rounded-xl bg-base-100 border border-base-content/10 p-5">
+      <div className="my-6 rounded-xl bg-base-100 border border-base-content/10 p-4 md:p-6">
         <h3 className="text-lg font-semibold text-base-content mb-2">
           What does a Contest Creator do?
         </h3>
 
-        <p className="text-sm text-base-content/70 leading-relaxed">
+        <p className="text-xs md:text-sm text-base-content/70 leading-relaxed">
           Contest Creators are responsible for publishing contests, defining
           clear rules and tasks, reviewing submissions, and selecting winners in
           a fair and transparent manner. As a creator, you will have access to
@@ -76,7 +76,7 @@ const BecomeCreatorForm = () => {
           activity.
         </p>
 
-        <p className="text-sm text-base-content/70 leading-relaxed mt-3">
+        <p className="text-xs md:text-sm text-base-content/70 leading-relaxed mt-3">
           All creator requests are reviewed by the admin team. Once approved,
           you will be able to create contests, set prize details, and manage
           submissions directly from your dashboard.
@@ -84,7 +84,7 @@ const BecomeCreatorForm = () => {
       </div>
 
       {/* Info */}
-      <div className="bg-base-200 rounded-xl p-5 mb-6 text-sm text-base-content/80 space-y-2">
+      <div className="bg-base-200 rounded-xl p-4 mb-6 text-xs md:text-sm text-base-content/80 space-y-2">
         <p>✔ Create and publish contests</p>
         <p>✔ Manage participants and submissions</p>
         <p>✔ Select winners transparently</p>
@@ -92,7 +92,7 @@ const BecomeCreatorForm = () => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="flex gap-3 items-start">
           <input
             type="checkbox"
@@ -101,7 +101,7 @@ const BecomeCreatorForm = () => {
               required: "You must agree before continuing",
             })}
           />
-          <p className="text-sm text-base-content/70">
+          <p className="text-xs md:text-sm text-base-content/70">
             I agree to follow ContestHub rules, ensure fair judging, and comply
             with platform policies.
           </p>

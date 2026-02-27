@@ -99,9 +99,9 @@ const AddContestForm = () => {
     }
   };
   return (
-    <div className="bg-base-200 rounded-2xl shadow-xl p-8">
+    <div>
       {/* Header */}
-      <div className="text-center mb-8">
+      <div className="mb-8 md:px-4 py-8">
         <h2 className="text-3xl font-bold mb-2">
           Create <span className="gradient-text">New Contest</span>
         </h2>
@@ -112,7 +112,7 @@ const AddContestForm = () => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 bg-base-200 rounded-2xl shadow-xl p-4">
         {/* Contest Name */}
         <div>
           <div>

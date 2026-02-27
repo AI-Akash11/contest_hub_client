@@ -135,7 +135,7 @@ const UpdateProfile = () => {
   if (isError) return <ErrorPage />;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto md:px-4 py-8">
       <div className="mb-8">
         <h2 className="text-3xl font-bold mb-2">
           Update <span className="gradient-text">Profile</span>

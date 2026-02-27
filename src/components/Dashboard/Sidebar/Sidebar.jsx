@@ -14,6 +14,7 @@ import CreatorMenu from "./Menu/CreatorMenu";
 import UserMenu from "./Menu/UserMenu";
 import useRole from "../../../hooks/useRole";
 import LoadingSpinner from "../../Shared/LoadingSpinner";
+import { FaHome } from "react-icons/fa";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
@@ -25,18 +26,18 @@ const Sidebar = () => {
     setActive(!isActive);
   };
 
-  if(isRoleLoading){
-    return <LoadingSpinner message="Loading Sidebar"></LoadingSpinner>
+  if (isRoleLoading) {
+    return <LoadingSpinner message="Loading Sidebar"></LoadingSpinner>;
   }
 
   return (
     <>
-    {!isActive && (
-  <div
-    onClick={handleToggle}
-    className="fixed inset-0 z-10 bg-black/40 md:hidden"
-  />
-)}
+      {!isActive && (
+        <div
+          onClick={handleToggle}
+          className="fixed inset-0 z-10 bg-black/40 md:hidden"
+        />
+      )}
       {/* Small Screen Navbar, only visible till md breakpoint */}
       <div className="bg-base-200 text-base-content flex justify-between md:hidden">
         <div>
@@ -55,7 +56,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`z-20 md:fixed flex flex-col justify-between overflow-x-hidden bg-base-200 w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform max-h-screen ${
+        className={`z-20 md:fixed flex flex-col justify-between overflow-x-hidden bg-base-200 w-64 space-y-6 px-2 py-4 fixed inset-y-0 left-0 transform max-h-screen ${
           isActive && "-translate-x-full"
         }  md:translate-x-0  transition duration-200 ease-in-out`}
       >
@@ -63,7 +64,7 @@ const Sidebar = () => {
           {/* Top Content */}
           <div>
             {/* Logo */}
-            <div className="w-full hidden md:flex px-4 py-2 justify-center items-center mx-auto">
+            <div className="w-full hidden md:flex px-4 py-2 justify-center items-center mx-auto bg-base-300 rounded-2xl">
               <Link to="/" className="font-bold gradient-text text-xl">
                 Contest Hub
               </Link>
@@ -91,6 +92,11 @@ const Sidebar = () => {
           <div>
             <hr />
 
+            <MenuItem
+              icon={FaHome}
+              label="Home Page"
+              address="/"
+            />
             <MenuItem
               icon={FcSettings}
               label="Profile"

@@ -120,7 +120,7 @@ const ManageUsers = () => {
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto md:px-4">
       <div className="py-8">
         {/* Header */}
         <div className="mb-8">
