@@ -1,11 +1,10 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import ContestCard from "../../components/Shared/Card/ContestCard";
 import Container from "../../components/Shared/Container";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import ErrorPage from "../ErrorPage";
 import NotFound from "../../components/Shared/NotFound/NotFound";
 import { useSearchParams } from "react-router";
@@ -13,17 +12,28 @@ import { useSearchParams } from "react-router";
 const AllContests = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const hasReadUrlParams = useRef(false);
   const scrollRef = useRef(null);
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   useEffect(() => {
     if (!hasReadUrlParams.current) {
       const urlSearch = searchParams.get("search");
       if (urlSearch) {
         setSearchQuery(urlSearch);
+        setDebouncedSearch(urlSearch);
         const newParams = new URLSearchParams(searchParams);
         newParams.delete("search");
         setSearchParams(newParams, { replace: true });
@@ -32,66 +42,50 @@ const AllContests = () => {
     }
   }, [searchParams, setSearchParams]);
 
+  // all-contest data query
   const {
-    data: allContests = [],
-    isLoading,
+    data: contestData = { contests: [], total: 0 },
+    isLoading: isContestsLoading,
     isError,
   } = useQuery({
-    queryKey: ["allContests"],
+    queryKey: ["allContests", currentPage, debouncedSearch, selectedCategory],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/all-contests`,
+        `${import.meta.env.VITE_API_URL}/all-contests?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearch}&category=${selectedCategory === "All" ? "" : selectedCategory}`,
       );
       return res.data;
     },
+    keepPreviousData: true,
   });
 
-  const uniqueCategories = useMemo(() => {
-    if (!allContests || allContests.length === 0) return ["All"];
+  // query for categories
+  const { data: categoryData = { categories: ["All"], counts: {} } } = useQuery(
+    {
+      queryKey: ["contestCategories", debouncedSearch],
+      queryFn: async () => {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/contest-categories?search=${debouncedSearch}`,
+        );
+        return res.data;
+      },
+    },
+  );
 
-    const categories = allContests.map((contest) => contest.contestType);
-    const uniqueSet = new Set(categories);
-    return ["All", ...Array.from(uniqueSet)].sort();
-  }, [allContests]);
-
-  // filter contests
-  const filteredContests = useMemo(() => {
-    let filtered = allContests;
-
-    // Filter by category
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter(
-        (contest) => contest.contestType === selectedCategory,
-      );
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (contest) =>
-          contest.name.toLowerCase().includes(query) ||
-          contest.contestType.toLowerCase().includes(query) ||
-          contest.creator?.name.toLowerCase().includes(query),
-      );
-    }
-
-    return filtered;
-  }, [allContests, selectedCategory, searchQuery]);
+  const uniqueCategories = categoryData.categories;
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredContests.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentContests = filteredContests.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(contestData.total / itemsPerPage);
+
+  const currentContests = contestData.contests;
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory]);
+  }, [debouncedSearch, selectedCategory]);
 
   const clearFilters = () => {
     setSearchQuery("");
+    setDebouncedSearch("");
     setSelectedCategory("All");
     setCurrentPage(1);
   };
@@ -117,10 +111,6 @@ const AllContests = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   if (isError) {
     return <ErrorPage />;
   }
@@ -128,7 +118,7 @@ const AllContests = () => {
   return (
     <Container>
       <div className="min-h-screen bg-background">
-        {/* Header */}
+        {/* Header - Static, never reloads */}
         <section className="pt-10 md:pt-15">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -138,14 +128,14 @@ const AllContests = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Explore All <span className="gradient-text">Contests</span>
             </h1>
-            <p className="text-sm  md:text-base text-base-content/70 max-w-2xl mx-auto">
+            <p className="text-sm md:text-base text-base-content/70 max-w-2xl mx-auto">
               Discover a wide range of creative competitions across various
               categories. Find the perfect contest that matches your skills and
               interests.
             </p>
           </motion.div>
 
-          {/* Search Bar */}
+          {/* Search Bar - Static, never loses focus */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -172,7 +162,7 @@ const AllContests = () => {
             </div>
           </motion.div>
 
-          {/* Category Slider with Arrows */}
+          {/* Category Slider - Static */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -218,12 +208,7 @@ const AllContests = () => {
                     {category}
                     {category !== "All" && (
                       <span className="ml-2 text-xs opacity-70">
-                        (
-                        {
-                          allContests.filter((c) => c.contestType === category)
-                            .length
-                        }
-                        )
+                        ({categoryData.counts[category] || 0})
                       </span>
                     )}
                   </motion.button>
@@ -250,122 +235,140 @@ const AllContests = () => {
           )}
         </section>
 
-        {/* Contests Grid */}
-        {filteredContests.length === 0 ? (
-          <div className="text-center py-16">
-            <NotFound />
-            <p className="mt-4 text-base-content/70">
-              {searchQuery || selectedCategory !== "All"
-                ? "No contests match your search criteria. Try adjusting your filters."
-                : "No contests available at the moment."}
-            </p>
-            {(searchQuery || selectedCategory !== "All") && (
-              <button onClick={clearFilters} className="btn btn-primary mt-6">
-                View All Contests
-              </button>
-            )}
-          </div>
-        ) : (
-          <section className="pb-16">
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-base-content/70">
-                Showing{" "}
-                <span className="text-base-content font-semibold">
-                  {startIndex + 1}-{Math.min(endIndex, filteredContests.length)}
-                </span>{" "}
-                of{" "}
-                <span className="font-semibold">{filteredContests.length}</span>{" "}
-                contests
-                {searchQuery && (
-                  <span className="ml-2 text-sm">
-                    for "<span className="font-semibold">{searchQuery}</span>"
-                  </span>
-                )}
-              </p>
-            </div>
-
+        {/* Contests Grid - Only this section reloads */}
+        <AnimatePresence mode="wait">
+          {isContestsLoading ? (
             <motion.div
+              key="loading"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4"
+              exit={{ opacity: 0 }}
+              className="flex justify-center items-center py-20"
             >
-              {currentContests.map((contest, index) => (
-                <motion.div
-                  key={contest._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <ContestCard contest={contest} />
-                </motion.div>
-              ))}
+              <span className="loading loading-spinner loading-lg text-primary"></span>
             </motion.div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-6">
-                {/* Previous Button */}
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <FiChevronLeft className="w-4 h-4" />
-                  Previous
+          ) : currentContests.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center py-16"
+            >
+              <NotFound />
+              <p className="mt-4 text-base-content/70">
+                {searchQuery || selectedCategory !== "All"
+                  ? "No contests match your search criteria. Try adjusting your filters."
+                  : "No contests available at the moment."}
+              </p>
+              {(searchQuery || selectedCategory !== "All") && (
+                <button onClick={clearFilters} className="btn btn-primary mt-6">
+                  View All Contests
                 </button>
-
-                {/* Page Numbers */}
-                <div className="flex gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => {
-                      // Show first page, last page, current page, and pages around current
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`btn btn-sm ${
-                              currentPage === page
-                                ? "btn-primary"
-                                : "btn-outline"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="flex items-center px-2">
-                            ...
-                          </span>
-                        );
-                      }
-                      return null;
-                    },
+              )}
+            </motion.div>
+          ) : (
+            <motion.section
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="pb-16"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-base-content/70">
+                  Showing{" "}
+                  <span className="text-base-content font-semibold">
+                    {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                    {Math.min(currentPage * itemsPerPage, contestData.total)}
+                  </span>{" "}
+                  of <span className="font-semibold">{contestData.total}</span>{" "}
+                  contests
+                  {searchQuery && (
+                    <span className="ml-2 text-sm">
+                      for "<span className="font-semibold">{searchQuery}</span>"
+                    </span>
                   )}
-                </div>
-
-                {/* Next Button */}
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                  <FiChevronRight className="w-4 h-4" />
-                </button>
+                </p>
               </div>
-            )}
-          </section>
-        )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
+                {currentContests.map((contest, index) => (
+                  <motion.div
+                    key={contest._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <ContestCard contest={contest} />
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-6">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <FiChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+
+                  {/* Page Numbers */}
+                  <div className="flex gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => handlePageChange(page)}
+                              className={`btn btn-sm ${
+                                currentPage === page
+                                  ? "btn-primary"
+                                  : "btn-outline"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="flex items-center px-2">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      },
+                    )}
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                    <FiChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </motion.section>
+          )}
+        </AnimatePresence>
       </div>
     </Container>
   );
