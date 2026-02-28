@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import SectionBadge from "../SectionBadge";
 import SectionTitle from "../SectionTitle";
 import SectionSubTitle from "../SectionSubTitle";
+import PopularContestsSkeleton from "../../skeletons/PopularContestsSkeleton";
 
 const PopularContests = () => {
   const {
@@ -24,9 +25,6 @@ const PopularContests = () => {
     },
   });
 
-  if (isLoading) {
-    return <LoadingSpinner message="Loading Popular Contests"></LoadingSpinner>;
-  }
 
   if (isError) {
     return null;
@@ -53,12 +51,20 @@ const PopularContests = () => {
         </motion.div>
 
         {/* Contests Grid */}
+
+
+
         <section >
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
-            {popularContests.map((contest) => (
-              <ContestCard key={contest._id} contest={contest} />
-            ))}
-          </div>
+          {isLoading ? (
+            <PopularContestsSkeleton />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
+              {popularContests.map((contest) => (
+                <ContestCard key={contest._id} contest={contest} />
+              ))}
+            </div>
+          )}
+
 
           <div className="flex justify-center mt-10">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

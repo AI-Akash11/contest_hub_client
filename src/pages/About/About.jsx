@@ -11,19 +11,53 @@ import {
 import Container from "../../components/Shared/Container";
 import CountUp from "react-countup";
 import SectionTitle from "../../components/Home/SectionTitle";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+import AboutStatsSkeleton from "../../components/skeletons/AboutStatsSkeleton";
 
 const About = () => {
+  const {
+    data: statsData = {
+      users: 0,
+      creators: 0,
+      contestsCreated: 0,
+      prizesDistributed: 0,
+    },
+    isLoading: isStatsLoading,
+  } = useQuery({
+    queryKey: ["platformStats"],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/stats`);
+      return res.data;
+    },
+  });
+
   const stats = [
-    { label: "Active Users", value: 50, suffix: " K+", icon: <FiUsers /> },
-    { label: "Contests Hosted", value: 12, suffix: " K+", icon: <FiAward /> },
+    {
+      label: "Active Users",
+      value: statsData.users,
+      suffix: "+",
+      icon: <FiUsers />,
+    },
+    {
+      label: "Contests Hosted",
+      value: statsData.contestsCreated,
+      suffix: "+",
+      icon: <FiAward />,
+    },
     {
       label: "Prize Distributed",
-      value: "25",
+      value: statsData.prizesDistributed,
       prefix: "$",
-      suffix: " K+",
       icon: <FiTrendingUp />,
     },
-    { label: "Countries", value: 85, suffix: " +", icon: <FiGlobe /> },
+    {
+      label: "Countries",
+      value: 85,
+      suffix: "+",
+      icon: <FiGlobe />,
+    },
   ];
 
   const values = [
@@ -70,34 +104,38 @@ const About = () => {
 
       <section className="bg-base-300 rounded-xl">
         <div className="container mx-auto p-4 lg:p-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center bg-base-100 p-4 rounded-2xl hover:scale-103 duration-300 shadow-xl"
-              >
-                <div className="text-4xl text-primary mb-2 flex justify-center">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl md:text-4xl font-bold text-base-content mb-1">
-                  {stat.prefix}
-                  <CountUp
-                    end={stat.value}
-                    duration={2}
-                    separator=","
-                    enableScrollSpy
-                    scrollSpyOnce
-                  />
-                  {stat.suffix}
-                </div>
-                <p className="text-base-content/70">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
+          {isStatsLoading ? (
+            <AboutStatsSkeleton/>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center bg-base-100 p-4 rounded-2xl hover:scale-103 duration-300 shadow-xl"
+                >
+                  <div className="text-4xl text-primary mb-2 flex justify-center">
+                    {stat.icon}
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-base-content mb-1">
+                    {stat.prefix}
+                    <CountUp
+                      end={stat.value}
+                      duration={2}
+                      separator=","
+                      enableScrollSpy
+                      scrollSpyOnce
+                    />
+                    {stat.suffix}
+                  </div>
+                  <p className="text-base-content/70">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -109,7 +147,9 @@ const About = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <SectionTitle>Our <span className="gradient-text">Values</span></SectionTitle>
+            <SectionTitle>
+              Our <span className="gradient-text">Values</span>
+            </SectionTitle>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((value, index) => (

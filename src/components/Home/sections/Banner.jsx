@@ -4,33 +4,51 @@ import CountUp from "react-countup";
 import Container from "../../Shared/Container";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import SectionBadge from "../SectionBadge";
-
-const stats = [
-  {
-    icon: FiUsers,
-    value: 50000,
-    label: "Active Creators",
-    suffix: "+",
-  },
-  {
-    icon: FiAward,
-    value: 1200,
-    label: "Contests Completed",
-    suffix: "+",
-  },
-  {
-    icon: FiTrendingUp,
-    value: 2.5,
-    label: "Million in Prizes",
-    prefix: "$",
-    suffix: "M+",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import BannerStatsSkeleton from "../../skeletons/BannerStatsSkeleton";
 
 const Banner = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
+  const {
+    data: statsData = {
+      users: 0,
+      creators: 0,
+      contestsCreated: 0,
+      prizesDistributed: 0,
+    },
+    isLoading: isStatsLoading,
+  } = useQuery({
+    queryKey: ["platformStats"],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/stats`);
+      return res.data;
+    },
+  });
+
+  const stats = [
+    {
+      icon: FiUsers,
+      value: statsData.creators,
+      label: "Active Creators",
+      suffix: "+",
+    },
+    {
+      icon: FiAward,
+      value: statsData.contestsCreated,
+      label: "Contests Created",
+      suffix: "+",
+    },
+    {
+      icon: FiTrendingUp,
+      value: statsData.prizesDistributed,
+      label: "in Prizes",
+      prefix: "$",
+      suffix: "+",
+    },
+  ];
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -109,32 +127,37 @@ const Banner = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="grid grid-cols-3 gap-2 md:gap-6 max-w-3xl mx-auto"
             >
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col md:flex-row items-center gap-1 md:gap-4 p-4 bg-base-300 rounded-2xl"
-                >
-                  <div className="w-15 md:w-12 h-15 md:h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                    <stat.icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="text-center md:text-left">
-                    <div className="text-xl md:text-2xl font-bold">
-                      {stat.prefix}
-                      <CountUp
-                        end={stat.value}
-                        duration={2.5}
-                        decimals={stat.value % 1 !== 0 ? 1 : 0}
-                      />
-                      {stat.suffix}
+              {isStatsLoading ? (
+                <BannerStatsSkeleton />
+              ) : (
+                <div className="grid grid-cols-3 gap-2 md:gap-6 max-w-3xl mx-auto">
+                  {stats.map((stat, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col md:flex-row items-center gap-1 md:gap-4 p-4 bg-base-300 rounded-2xl"
+                    >
+                      <div className="w-15 md:w-12 h-15 md:h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                        <stat.icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="text-center md:text-left">
+                        <div className="text-xl md:text-2xl font-bold">
+                          {stat.prefix}
+                          <CountUp
+                            end={stat.value}
+                            duration={2.5}
+                            decimals={stat.value % 1 !== 0 ? 1 : 0}
+                          />
+                          {stat.suffix}
+                        </div>
+                        <div className="text-[10px] md:text-sm text-base-content/70">
+                          {stat.label}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[10px] md:text-sm text-base-content/70">
-                      {stat.label}
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </motion.div>
           </div>
         </div>

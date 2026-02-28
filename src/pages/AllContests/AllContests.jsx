@@ -8,6 +8,7 @@ import axios from "axios";
 import ErrorPage from "../ErrorPage";
 import NotFound from "../../components/Shared/NotFound/NotFound";
 import { useSearchParams } from "react-router";
+import AllContestsError from "../../components/errorPages/AllContestsError ";
 
 const AllContests = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,7 +50,13 @@ const AllContests = () => {
     isLoading: isContestsLoading,
     isError,
   } = useQuery({
-    queryKey: ["allContests", currentPage, debouncedSearch, selectedCategory, selectedStatus],
+    queryKey: [
+      "allContests",
+      currentPage,
+      debouncedSearch,
+      selectedCategory,
+      selectedStatus,
+    ],
     queryFn: async () => {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/all-contests?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearch}&category=${selectedCategory === "All" ? "" : selectedCategory}&status=${selectedStatus}`,
@@ -62,7 +69,7 @@ const AllContests = () => {
   // query for categories
   const { data: categoryData = { categories: ["All"], counts: {} } } = useQuery(
     {
-      queryKey: ["contestCategories", debouncedSearch,selectedStatus],
+      queryKey: ["contestCategories", debouncedSearch, selectedStatus],
       queryFn: async () => {
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/contest-categories?search=${debouncedSearch}&status=${selectedStatus}`,
@@ -114,7 +121,32 @@ const AllContests = () => {
   };
 
   if (isError) {
-    return <ErrorPage />;
+    return (
+      <Container>
+      <div className="min-h-screen bg-background">
+        {/* Header - Keep visible even on error */}
+        <section className="pt-10 md:pt-15">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Explore All <span className="gradient-text">Contests</span>
+            </h1>
+            <p className="text-sm md:text-base text-base-content/70 max-w-2xl mx-auto">
+              Discover a wide range of creative competitions across various
+              categories. Find the perfect contest that matches your skills and
+              interests.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* Error Component */}
+        <AllContestsError onRetry={() => window.location.reload()} />
+      </div>
+    </Container>
+    )
   }
 
   return (
@@ -277,41 +309,40 @@ const AllContests = () => {
               exit={{ opacity: 0 }}
               className="pb-16"
             >
-<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-  {/* Left: Showing X–Y of Z */}
-  <p className="text-base-content/70 text-center sm:text-left">
-    Showing{" "}
-    <span className="text-base-content font-semibold">
-      {(currentPage - 1) * itemsPerPage + 1} –{" "}
-      {Math.min(currentPage * itemsPerPage, contestData.total)}
-    </span>{" "}
-    of{" "}
-    <span className="font-semibold">{contestData.total}</span>{" "}
-    contests
-    {searchQuery && (
-      <span className="ml-2 text-sm">
-        for "<span className="font-semibold">{searchQuery}</span>"
-      </span>
-    )}
-  </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                {/* Left: Showing X–Y of Z */}
+                <p className="text-base-content/70 text-center sm:text-left">
+                  Showing{" "}
+                  <span className="text-base-content font-semibold">
+                    {(currentPage - 1) * itemsPerPage + 1} –{" "}
+                    {Math.min(currentPage * itemsPerPage, contestData.total)}
+                  </span>{" "}
+                  of <span className="font-semibold">{contestData.total}</span>{" "}
+                  contests
+                  {searchQuery && (
+                    <span className="ml-2 text-sm">
+                      for "<span className="font-semibold">{searchQuery}</span>"
+                    </span>
+                  )}
+                </p>
 
-  {/* Right: Status Filter Select */}
-  <div className="flex justify-center sm:justify-end">
-    <select
-      value={selectedStatus}
-      onChange={(e) => setSelectedStatus(e.target.value)}
-      className="
+                {/* Right: Status Filter Select */}
+                <div className="flex justify-center sm:justify-end">
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="
         select select-bordered select-sm w-40 max-w-xs
         bg-base-200 text-base-content border-base-content/20
         focus:outline-primary focus:ring-2 focus:ring-primary
       "
-    >
-      <option value="all">All Contests</option>
-      <option value="live">Live Contests</option>
-      <option value="ended">Ended Contests</option>
-    </select>
-  </div>
-</div>
+                  >
+                    <option value="all">All Contests</option>
+                    <option value="live">Live Contests</option>
+                    <option value="ended">Ended Contests</option>
+                  </select>
+                </div>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
                 {currentContests.map((contest, index) => (

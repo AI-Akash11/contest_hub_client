@@ -5,54 +5,26 @@ import Container from "../../Shared/Container";
 import SectionBadge from "../SectionBadge";
 import SectionTitle from "../SectionTitle";
 import SectionSubTitle from "../SectionSubTitle";
-
-const recentWinners = [
-  {
-    id: 1,
-    userName: "Sarah Johnson",
-    userPhoto: "https://i.pravatar.cc/150?img=32",
-    contestName: "Digital Art Masterpiece Challenge",
-    prizeMoney: 5000,
-  },
-  {
-    id: 2,
-    userName: "Alex Carter",
-    userPhoto: "https://i.pravatar.cc/150?img=12",
-    contestName: "Tech Article Writing Contest",
-    prizeMoney: 3000,
-  },
-  {
-    id: 3,
-    userName: "Emily Davis",
-    userPhoto: "https://i.pravatar.cc/150?img=47",
-    contestName: "Logo Design Competition",
-    prizeMoney: 4000,
-  },
-  {
-    id: 4,
-    userName: "Michael Lee",
-    userPhoto: "https://i.pravatar.cc/150?img=22",
-    contestName: "Innovative Business Idea Pitch",
-    prizeMoney: 10000,
-  },
-  {
-    id: 5,
-    userName: "Sophia Brown",
-    userPhoto: "https://i.pravatar.cc/150?img=25",
-    contestName: "Mobile App UI/UX Design Challenge",
-    prizeMoney: 6000,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const RecentWinners = () => {
-  const totalPrizes = recentWinners.reduce(
-    (acc, winner) => acc + winner.prizeMoney,
-    0,
-  );
+  const {
+    data: winnersData = { winners: [], recentTotalPrizes: 0, totalWinners: 0 },
+    isLoading: isWinnersLoading,
+  } = useQuery({
+    queryKey: ["recentWinners"],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/recent-winners`,
+      );
+      return res.data;
+    },
+  });
 
   return (
-      <section className="mb-15 lg:mb-20">
-    <Container>
+    <section className="mb-15 lg:mb-20">
+      <Container>
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -71,87 +43,109 @@ const RecentWinners = () => {
           </SectionSubTitle>
         </motion.div>
 
-        {/* Stats Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-base-300 p-6 md:p-8 rounded-2xl mb-10"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Total Winners */}
-            <div className="text-center border-b md:border-b-0 md:border-r border-base-content/10 pb-5 md:pb-0">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/20 flex items-center justify-center mb-4">
-                <FiAward className="w-8 h-8 text-primary" />
-              </div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">
-                <CountUp end={recentWinners.length * 100} duration={2} />+
-              </div>
-              <div className="text-base-content/70">Total Winners</div>
-            </div>
-
-            {/* Prizes Distributed */}
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-accent/20 flex items-center justify-center mb-4">
-                <FiDollarSign className="w-8 h-8 text-accent" />
-              </div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">
-                $<CountUp end={totalPrizes * 10} duration={2} separator="," />+
-              </div>
-              <div className="text-base-content/70">Prizes Distributed</div>
-            </div>
-
-            {/* Satisfaction */}
-            <div className="text-center border-t md:border-t-0 md:border-l border-base-content/10 pt-5 md:pt-0">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary/20 flex items-center justify-center mb-4">
-                <FiTrendingUp className="w-8 h-8 text-secondary" />
-              </div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">
-                <CountUp end={95} duration={2} />%
-              </div>
-              <div className="text-base-content/70">Satisfaction Rate</div>
-            </div>
+        {isWinnersLoading ? (
+          <div className="flex justify-center py-20">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
           </div>
-        </motion.div>
-
-        {/* Winners Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-4">
-          {recentWinners.map((winner, index) => (
+        ) : (
+          <>
+            {/* Stats Banner */}
             <motion.div
-              key={winner.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-base-300 rounded-2xl p-6 text-center hover:shadow-primary/20 hover:shadow-2xl transition duration-200"
+              className="bg-base-300 p-6 md:p-8 rounded-2xl mb-10"
             >
-              <div className="relative inline-block mb-4">
-                <img
-                  src={winner.userPhoto}
-                  alt={winner.userName}
-                  className="w-20 h-20 rounded-full object-cover border-4 border-primary"
-                />
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <FiAward className="w-4 h-4 text-base-100" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Total Winners */}
+                <div className="text-center border-b md:border-b-0 md:border-r border-base-content/10 pb-5 md:pb-0">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/20 flex items-center justify-center mb-4">
+                    <FiAward className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold mb-2">
+                    <CountUp
+                      end={winnersData.totalWinners}
+                      duration={2}
+                      separator=","
+                    />
+                    +
+                  </div>
+                  <div className="text-base-content/70">Recent Winners</div>
+                </div>
+
+                {/* Prizes Distributed */}
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-accent/20 flex items-center justify-center mb-4">
+                    <FiDollarSign className="w-8 h-8 text-accent" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold mb-2">
+                    $
+                    <CountUp
+                      end={Math.round(winnersData.recentTotalPrizes / 1000)}
+                      duration={2}
+                      separator=","
+                    />{" "}
+                    K+
+                  </div>
+                  <div className="text-base-content/70">Prizes Distributed</div>
+                </div>
+
+                {/* Satisfaction – keep static or remove if not needed */}
+                <div className="text-center border-t md:border-t-0 md:border-l border-base-content/10 pt-5 md:pt-0">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary/20 flex items-center justify-center mb-4">
+                    <FiTrendingUp className="w-8 h-8 text-secondary" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold mb-2">
+                    <CountUp end={95} duration={2} />%
+                  </div>
+                  <div className="text-base-content/70">Satisfaction Rate</div>
                 </div>
               </div>
-
-              <h3 className="font-semibold text-lg mb-1">{winner.userName}</h3>
-
-              <p className="text-sm text-base-content/70 mb-3 line-clamp-1">
-                {winner.contestName}
-              </p>
-
-              <div className="inline-flex items-center gap-1 px-3 py-1 bg-primary/20 rounded-full">
-                <FiDollarSign className="w-4 h-4 text-primary" />
-                <span className="font-bold text-primary">
-                  {winner.prizeMoney.toLocaleString()}
-                </span>
-              </div>
             </motion.div>
-          ))}
-        </div>
 
+            {/* Winners Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-4">
+              {winnersData.winners.map((winner, index) => (
+                <motion.div
+                  key={index} // use index or add unique id if available
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-base-300 rounded-2xl p-6 text-center hover:shadow-primary/20 hover:shadow-2xl transition duration-200"
+                >
+                  <div className="relative inline-block mb-4">
+                    <img
+                      src={
+                        winner.winnerImage || "https://i.pravatar.cc/150?img=32"
+                      } // fallback
+                      alt={winner.winnerName}
+                      className="w-20 h-20 rounded-full object-cover border-4 border-primary"
+                    />
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                      <FiAward className="w-4 h-4 text-base-100" />
+                    </div>
+                  </div>
+
+                  <h3 className="font-semibold text-lg mb-1">
+                    {winner.winnerName}
+                  </h3>
+
+                  <p className="text-sm text-base-content/70 mb-3 line-clamp-1">
+                    {winner.contestName}
+                  </p>
+
+                  <div className="inline-flex items-center gap-1 px-3 py-1 bg-primary/20 rounded-full">
+                    <FiDollarSign className="w-4 h-4 text-primary" />
+                    <span className="font-bold text-primary">
+                      {winner.prizeMoney.toLocaleString()}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        )}
         {/* CTA Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -176,8 +170,8 @@ const RecentWinners = () => {
             Start Competing Now
           </motion.a>
         </motion.div>
-    </Container>
-      </section>
+      </Container>
+    </section>
   );
 };
 
