@@ -5,7 +5,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import ErrorPage from "../../ErrorPage";
 import Swal from "sweetalert2";
-import { FiCheckCircle, FiXCircle, FiTrash2, FiEye } from "react-icons/fi";
+import { FiCheckCircle, FiXCircle, FiTrash2, FiEye, FiAward } from "react-icons/fi";
 import { Link } from "react-router";
 import { formatDeadline } from "../../../utils";
 import { FaCalendar, FaUser, FaUsers } from "react-icons/fa";
@@ -15,7 +15,7 @@ const ManageContests = () => {
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
-  const limit = 10; // matches backend default
+  const limit = 10;
 
   // Fetch paginated contests
   const {
@@ -28,17 +28,43 @@ const ManageContests = () => {
       const res = await axiosSecure(`/admin/contests?page=${currentPage}&limit=${limit}`);
       return res.data;
     },
-    keepPreviousData: true, // smooth page changes
+    keepPreviousData: true,
   });
 
   const contests = contestsData.contests || [];
   const totalPages = contestsData.totalPages || 1;
 
-  // Mutations (approve, reject, delete) – unchanged, but invalidate on success
+  // Helper: Compute real display status
+  const getContestDisplayStatus = (contest) => {
+    const now = new Date();
+    const deadline = new Date(contest.deadline);
+
+    if (contest.status !== "approved") {
+      return contest.status; // pending / rejected
+    }
+
+    if (deadline < now || contest.winner?.status === "declared") {
+      return contest.winner?.status === "declared" ? "winner_declared" : "ended";
+    }
+
+    return "live";
+  };
+
+  // Badge styles
+  const getStatusBadge = (displayStatus) => {
+    const badges = {
+      pending: "badge-primary",
+      rejected: "badge-error",
+      live: "badge-success animate-pulse",
+      ended: "badge-warning",
+      winner_declared: "badge-secondary",
+    };
+    return badges[displayStatus] || "badge-ghost";
+  };
+
+  // Mutations
   const { mutate: approveContest } = useMutation({
-    mutationFn: async (contestId) => {
-      return await axiosSecure.patch(`/admin/contests/approve/${contestId}`);
-    },
+    mutationFn: async (contestId) => axiosSecure.patch(`/admin/contests/approve/${contestId}`),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-contests"]);
       Swal.fire("Approved!", "Contest approved successfully", "success");
@@ -49,9 +75,7 @@ const ManageContests = () => {
   });
 
   const { mutate: rejectContest } = useMutation({
-    mutationFn: async (contestId) => {
-      return await axiosSecure.patch(`/admin/contests/reject/${contestId}`);
-    },
+    mutationFn: async (contestId) => axiosSecure.patch(`/admin/contests/reject/${contestId}`),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-contests"]);
       Swal.fire("Rejected!", "Contest rejected", "info");
@@ -62,9 +86,7 @@ const ManageContests = () => {
   });
 
   const { mutate: deleteContest } = useMutation({
-    mutationFn: async (contestId) => {
-      return await axiosSecure.delete(`/admin/contests/${contestId}`);
-    },
+    mutationFn: async (contestId) => axiosSecure.delete(`/admin/contests/${contestId}`),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-contests"]);
       Swal.fire("Deleted!", "Contest deleted permanently", "success");
@@ -74,7 +96,7 @@ const ManageContests = () => {
     },
   });
 
-  // Handlers (unchanged)
+  // Handlers
   const handleApprove = async (contestId, contestName) => {
     const result = await Swal.fire({
       title: "Approve Contest?",
@@ -127,15 +149,6 @@ const ManageContests = () => {
     if (result.isConfirmed) deleteContest(contestId);
   };
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      pending: "badge-primary",
-      approved: "badge-accent",
-      rejected: "badge-error",
-    };
-    return badges[status] || "badge-ghost";
-  };
-
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -147,7 +160,7 @@ const ManageContests = () => {
   if (isError) return <ErrorPage />;
 
   return (
-    <div className="container mx-auto md:px-4">
+    <div className="container mx-auto px-4">
       <div className="py-8">
         {/* Header */}
         <div className="mb-8">
@@ -159,7 +172,7 @@ const ManageContests = () => {
           </p>
         </div>
 
-        {/* Stats - Updated to show total from backend */}
+        {/* Stats Banner */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-base-200 rounded-xl p-4">
             <p className="text-xs md:text-sm text-base-content/60 mb-1">Total Contests</p>
@@ -185,202 +198,351 @@ const ManageContests = () => {
           </div>
         </div>
 
-        {/* Desktop Table */}
-        <div className="hidden md:block rounded-xl shadow-lg overflow-hidden">
-          <table className="min-w-full leading-normal bg-base-100">
-            <thead>
-              <tr className="bg-base-200">
-                <th className="px-5 py-4 border-b border-base-300 text-base-content text-left text-sm uppercase font-semibold">
-                  Contest Details
-                </th>
-                <th className="px-5 py-4 border-b border-base-300 text-base-content text-left text-sm uppercase font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {contests.length === 0 ? (
-                <tr>
-                  <td colSpan="2" className="px-5 py-10 text-center text-base-content/70">
-                    No contests found
-                  </td>
-                </tr>
-              ) : (
-                contests.map((contest) => (
-                  <tr
+        {/* Global Empty State */}
+        {contests.length === 0 ? (
+          <div className="text-center py-16 bg-base-200 rounded-xl">
+            <p className="text-xl font-semibold text-base-content/70 mb-2">
+              No contests found
+            </p>
+            <p className="text-base-content/60">
+              There are currently no contests in the system.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Showing Info */}
+            <div className="mb-4 text-sm text-base-content/70">
+              Showing{" "}
+              <span className="font-semibold text-base-content">
+                {(currentPage - 1) * limit + 1}–{Math.min(currentPage * limit, contestsData.total)}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-base-content">{contestsData.total}</span>{" "}
+              contests
+            </div>
+
+            {/* Contests - Unified Card View (mobile, tablet, md) */}
+            <div className="lg:hidden grid grid-cols-1 gap-6">
+              {contests.map((contest) => {
+                const displayStatus = getContestDisplayStatus(contest);
+                return (
+                  <motion.div
                     key={contest._id}
-                    className="hover:bg-base-200/50 transition border-b border-base-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-base-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
                   >
-                    {/* Contest Details */}
-                    <td className="px-5 py-5">
-                      <div className="flex items-start gap-4">
-                        <div className="shrink-0">
-                          <img
-                            className="w-24 h-24 rounded-lg object-cover ring-2 ring-base-300"
-                            src={contest.image}
-                            alt={contest.name}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <h3 className="font-bold text-base-content line-clamp-1">
-                              {contest.name}
-                            </h3>
-                            <span className={`badge ${getStatusBadge(contest.status)} capitalize shrink-0`}>
-                              {contest.status}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="badge badge-primary badge-sm">{contest.contestType}</span>
-                            <span className="text-sm font-semibold text-success">
-                              ${contest.prizeMoney} Prize
-                            </span>
-                            <span className="text-xs text-base-content/60">
-                              ${contest.entryFee} Entry
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-base-content/70 mb-2">
-                            <span className="flex gap-1 items-center">
-                              <FaUser />
-                              By: <strong>{contest.creator?.name}</strong>
-                            </span>
-                            <span className="flex gap-1 items-center">
-                              <FaUsers />
-                              <strong>{contest.participantCount}</strong> participants
-                            </span>
-                          </div>
-                          <div className="text-xs text-base-content/60 flex gap-1 items-center">
-                            <FaCalendar />
-                            Deadline: {formatDeadline(contest.deadline)}
-                          </div>
-                        </div>
+                    {/* Image & Title */}
+                    <div className="flex gap-4 mb-4">
+                      <img
+                        className="w-24 h-24 rounded-lg object-cover ring-2 ring-base-300 flex-shrink-0"
+                        src={contest.image}
+                        alt={contest.name}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base-content mb-1 line-clamp-2">
+                          {contest.name}
+                        </h3>
+                        <span
+                          className={`badge ${getStatusBadge(displayStatus)} capitalize badge-sm mb-2 inline-block`}
+                        >
+                          {displayStatus === "live"
+                            ? "Live"
+                            : displayStatus === "ended"
+                            ? "Ended"
+                            : displayStatus === "winner_declared"
+                            ? "Winner Declared"
+                            : contest.status}
+                        </span>
+                        <p className="text-sm text-base-content/70 line-clamp-2">
+                          {contest.description?.substring(0, 100) || "No description..."}
+                        </p>
                       </div>
-                    </td>
+                    </div>
+
+                    {/* Meta Info */}
+                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                      <div>
+                        <span className="text-base-content/60">Type:</span>
+                        <p className="font-medium">{contest.contestType}</p>
+                      </div>
+                      <div>
+                        <span className="text-base-content/60">Prize:</span>
+                        <p className="font-medium text-success">${contest.prizeMoney}</p>
+                      </div>
+                      <div>
+                        <span className="text-base-content/60">Entry:</span>
+                        <p className="font-medium">${contest.entryFee}</p>
+                      </div>
+                      <div>
+                        <span className="text-base-content/60">Participants:</span>
+                        <p className="font-medium">{contest.participantCount}</p>
+                      </div>
+                    </div>
+
+                    {/* Creator & Deadline */}
+                    <div className="text-xs text-base-content/70 mb-4 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <FaUser className="w-3 h-3" />
+                        By: <strong>{contest.creator?.name}</strong>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaCalendar className="w-3 h-3" />
+                        Deadline: {formatDeadline(contest.deadline)}
+                      </div>
+                    </div>
 
                     {/* Actions */}
-                    <td className="px-5 py-5">
-                      <div className="flex flex-col gap-2">
-                        <Link to={`/contest/${contest._id}`} className="btn btn-sm btn-outline gap-2">
-                          <FiEye className="w-4 h-4" />
-                          View Details
-                        </Link>
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to={`/contest/${contest._id}`}
+                        className="btn btn-sm btn-outline gap-2 flex-1"
+                      >
+                        <FiEye className="w-4 h-4" />
+                        View Details
+                      </Link>
 
-                        {contest.status === "pending" && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(contest._id, contest.name)}
-                              className="btn btn-sm bg-accent text-base-content/80 hover:bg-accent/80 gap-2"
-                            >
-                              <FiCheckCircle className="w-4 h-4" />
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleReject(contest._id, contest.name)}
-                              className="btn btn-sm bg-primary text-base-content/80 hover:bg-primary/80 gap-2"
-                            >
-                              <FiXCircle className="w-4 h-4" />
-                              Reject
-                            </button>
-                            <button
-                              onClick={() => handleDelete(contest._id, contest.name)}
-                              className="btn btn-sm bg-error text-base-content/80 hover:bg-error/80 gap-2"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                              Delete
-                            </button>
-                          </>
-                        )}
+                      {contest.status === "pending" && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(contest._id, contest.name)}
+                            className="btn btn-sm bg-accent text-base-content/80 hover:bg-accent/80 gap-2 flex-1"
+                          >
+                            <FiCheckCircle className="w-4 h-4" />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleReject(contest._id, contest.name)}
+                            className="btn btn-sm bg-primary text-base-content/80 hover:bg-primary/80 gap-2 flex-1"
+                          >
+                            <FiXCircle className="w-4 h-4" />
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleDelete(contest._id, contest.name)}
+                            className="btn btn-sm bg-error text-base-content/80 hover:bg-error/80 gap-2 w-full mt-2"
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </>
+                      )}
 
-                        {contest.status === "approved" && (
-                          <div className="text-xs text-accent flex items-center gap-1">
-                            <FiCheckCircle className="w-3 h-3" />
-                            Contest is live
-                          </div>
-                        )}
+                      {displayStatus === "live" && (
+                        <div className="badge badge-success gap-2 w-full justify-center py-3">
+                          <FiCheckCircle className="w-4 h-4" />
+                          Contest is live
+                        </div>
+                      )}
 
-                        {contest.status === "rejected" && (
-                          <>
-                            <button
-                              onClick={() => handleDelete(contest._id, contest.name)}
-                              className="btn btn-sm bg-error text-error-content hover:bg-error/80 gap-2"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                              Delete
-                            </button>
-                            <div className="text-xs text-error flex items-center gap-1">
-                              <FiXCircle className="w-3 h-3" />
-                              Contest is rejected
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                      {displayStatus === "ended" && (
+                        <div className="badge badge-warning gap-2 w-full justify-center py-3">
+                          <FiXCircle className="w-4 h-4" />
+                          Contest has ended
+                        </div>
+                      )}
 
-        {/* Mobile Card View */}
-        <div className="md:hidden space-y-4">
-          {contests.length === 0 ? (
-            <div className="text-center py-10 text-base-content/70">
-              No contests found
-            </div>
-          ) : (
-            contests.map((contest) => (
-              <div key={contest._id} className="bg-base-200 rounded-xl p-4 shadow-lg">
-                {/* ... your mobile card content unchanged ... */}
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="btn btn-sm btn-outline gap-2 disabled:opacity-50"
-            >
-              <FiChevronLeft className="w-4 h-4" />
-              Previous
-            </button>
-
-            <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                if (
-                  page === 1 ||
-                  page === totalPages ||
-                  (page >= currentPage - 1 && page <= currentPage + 1)
-                ) {
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`btn btn-sm ${currentPage === page ? "btn-primary" : "btn-outline"}`}
-                    >
-                      {page}
-                    </button>
-                  );
-                } else if (page === currentPage - 2 || page === currentPage + 2) {
-                  return <span key={page}>...</span>;
-                }
-                return null;
+                      {displayStatus === "winner_declared" && (
+                        <div className="badge badge-secondary gap-2 w-full justify-center py-3">
+                          <FiAward className="w-4 h-4" />
+                          Winner declared
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
               })}
             </div>
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="btn btn-sm btn-outline gap-2 disabled:opacity-50"
-            >
-              Next
-              <FiChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+            {/* Desktop Table (lg and up only) */}
+            <div className="hidden lg:block rounded-xl shadow-lg overflow-hidden mb-8">
+              <table className="min-w-full leading-normal bg-base-100">
+                <thead>
+                  <tr className="bg-base-200">
+                    <th className="px-5 py-4 border-b border-base-300 text-base-content text-left text-sm uppercase font-semibold">
+                      Contest Details
+                    </th>
+                    <th className="px-5 py-4 border-b border-base-300 text-base-content text-left text-sm uppercase font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contests.map((contest) => {
+                    const displayStatus = getContestDisplayStatus(contest);
+                    return (
+                      <tr
+                        key={contest._id}
+                        className="hover:bg-base-200/50 transition border-b border-base-300"
+                      >
+                        <td className="px-5 py-5">
+                          <div className="flex items-start gap-4">
+                            <div className="shrink-0">
+                              <img
+                                className="w-24 h-24 rounded-lg object-cover ring-2 ring-base-300"
+                                src={contest.image}
+                                alt={contest.name}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-3 mb-2">
+                                <h3 className="font-bold text-base-content line-clamp-1">
+                                  {contest.name}
+                                </h3>
+                                <span
+                                  className={`badge ${getStatusBadge(displayStatus)} capitalize shrink-0`}
+                                >
+                                  {displayStatus === "live"
+                                    ? "Live"
+                                    : displayStatus === "ended"
+                                    ? "Ended"
+                                    : displayStatus === "winner_declared"
+                                    ? "Winner Declared"
+                                    : contest.status}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 mb-2">
+                                <span className="badge badge-primary badge-sm">{contest.contestType}</span>
+                                <span className="text-sm font-semibold text-success">
+                                  ${contest.prizeMoney} Prize
+                                </span>
+                                <span className="text-xs text-base-content/60">
+                                  ${contest.entryFee} Entry
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-4 text-xs text-base-content/70 mb-2">
+                                <span className="flex gap-1 items-center">
+                                  <FaUser />
+                                  By: <strong>{contest.creator?.name}</strong>
+                                </span>
+                                <span className="flex gap-1 items-center">
+                                  <FaUsers />
+                                  <strong>{contest.participantCount}</strong> participants
+                                </span>
+                              </div>
+                              <div className="text-xs text-base-content/60 flex gap-1 items-center">
+                                <FaCalendar />
+                                Deadline: {formatDeadline(contest.deadline)}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="px-5 py-5">
+                          <div className="flex flex-col gap-2">
+                            <Link to={`/contest/${contest._id}`} className="btn btn-sm btn-outline gap-2">
+                              <FiEye className="w-4 h-4" />
+                              View Details
+                            </Link>
+
+                            {contest.status === "pending" && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(contest._id, contest.name)}
+                                  className="btn btn-sm bg-accent text-base-content/80 hover:bg-accent/80 gap-2"
+                                >
+                                  <FiCheckCircle className="w-4 h-4" />
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => handleReject(contest._id, contest.name)}
+                                  className="btn btn-sm bg-primary text-base-content/80 hover:bg-primary/80 gap-2"
+                                >
+                                  <FiXCircle className="w-4 h-4" />
+                                  Reject
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(contest._id, contest.name)}
+                                  className="btn btn-sm bg-error text-base-content/80 hover:bg-error/80 gap-2"
+                                >
+                                  <FiTrash2 className="w-4 h-4" />
+                                  Delete
+                                </button>
+                              </>
+                            )}
+
+                            {displayStatus === "live" && (
+                              <div className="text-xs text-success flex items-center gap-1">
+                                <FiCheckCircle className="w-3 h-3" />
+                                Contest is live
+                              </div>
+                            )}
+
+                            {displayStatus === "ended" && (
+                              <div className="text-xs text-warning flex items-center gap-1">
+                                <FiXCircle className="w-3 h-3" />
+                                Contest has ended
+                              </div>
+                            )}
+
+                            {displayStatus === "winner_declared" && (
+                              <div className="text-xs text-secondary flex items-center gap-1">
+                                <FiAward className="w-3 h-3" />
+                                Winner declared
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FiChevronLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
+
+                <div className="flex gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`btn btn-sm ${
+                            currentPage === page ? "btn-primary" : "btn-outline"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <span key={page} className="flex items-center px-2">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <FiChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

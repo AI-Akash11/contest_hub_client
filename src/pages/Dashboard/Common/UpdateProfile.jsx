@@ -221,7 +221,7 @@ const UpdateProfile = () => {
               />
             </div>
 
-            <div className="bg-info/10 border border-info/30 rounded-lg p-4 text-sm">
+            <div className="bg-secondary/10 border border-secondary/30 rounded-lg p-4 text-sm">
               <FiInfo className="inline mr-2" />
               Your profile information is visible to others.
             </div>

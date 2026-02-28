@@ -97,11 +97,11 @@ const ManageUsers = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setOpenDropdown(null); // Close any open dropdown
+    setOpenDropdown(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  //  role badge color
+  // Role badge color
   const getRoleBadge = (role) => {
     const badges = {
       admin: "badge-error",
@@ -120,7 +120,7 @@ const ManageUsers = () => {
   }
 
   return (
-    <div className="container mx-auto md:px-4">
+    <div className="container mx-auto px-4">
       <div className="py-8">
         {/* Header */}
         <div className="mb-8">
@@ -149,8 +149,103 @@ const ManageUsers = () => {
           </div>
         )}
 
-        {/* Table Container */}
-        <div className="rounded-xl shadow-lg shadow-base">
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {currentUsers.length === 0 ? (
+            <div className="text-center py-10 bg-base-200 rounded-xl">
+              <p className="text-base-content/70">No users found</p>
+            </div>
+          ) : (
+            currentUsers.map((userData) => (
+              <div
+                key={userData._id}
+                className="bg-base-200 rounded-xl p-4 shadow-lg"
+              >
+                {/* User Info */}
+                <div className="flex items-start gap-3 mb-4">
+                  <img
+                    className="w-14 h-14 rounded-full object-cover ring-2 ring-base-300"
+                    src={userData.image}
+                    alt={userData.name}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-base-content">
+                      {userData.name}
+                    </p>
+                    <p className="text-xs text-base-content/70 break-all">
+                      {userData.email}
+                    </p>
+                    <p className="text-xs text-base-content/60 mt-1">
+                      Joined{" "}
+                      {new Date(userData.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          year: "numeric",
+                        }
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Role Selector */}
+                <div className="relative">
+                  <label className="text-xs text-base-content/70 mb-1 block">
+                    Role
+                  </label>
+                  <button
+                    onClick={() =>
+                      setOpenDropdown(
+                        openDropdown === userData._id ? null : userData._id
+                      )
+                    }
+                    className={`badge ${getRoleBadge(userData.role)} capitalize font-semibold px-4 py-3 cursor-pointer hover:opacity-80 transition flex items-center gap-2 w-full justify-center`}
+                  >
+                    {userData.role}
+                    <FiChevronDown
+                      className={`w-4 h-4 transition-transform ${
+                        openDropdown === userData._id ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown */}
+                  {openDropdown === userData._id && (
+                    <div className="absolute z-50 mt-2 w-full bg-base-100 border border-base-300 rounded-lg shadow-xl">
+                      <div className="py-1">
+                        {["user", "creator", "admin"].map((role) => (
+                          <button
+                            key={role}
+                            onClick={() =>
+                              handleRoleChange(
+                                userData.email,
+                                userData.role,
+                                role
+                              )
+                            }
+                            className={`w-full text-left px-4 py-2 text-sm capitalize hover:bg-base-200 transition ${
+                              userData.role === role
+                                ? "bg-base-200 font-semibold"
+                                : ""
+                            }`}
+                          >
+                            {role}
+                            {userData.role === role && (
+                              <span className="ml-2 text-primary">✓</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block rounded-xl shadow-lg overflow-hidden">
           <table className="min-w-full leading-normal bg-base-100">
             <thead>
               <tr className="bg-base-300">
@@ -198,67 +293,72 @@ const ManageUsers = () => {
                               {
                                 month: "short",
                                 year: "numeric",
-                              },
+                              }
                             )}
                           </p>
-                          <p className="text-[10px] md:text-sm text-base-content/70">
+                          <p className="text-sm text-base-content/70">
                             {userData.email}
                           </p>
                         </div>
                       </div>
                     </td>
 
-                    {/* role */}
-                    <td className="px-5 py-5 flex justify-end lg:justify-center">
-                      <div className="relative inline-block">
-                        {/* current role */}
-                        <button
-                          onClick={() =>
-                            setOpenDropdown(
-                              openDropdown === userData._id
-                                ? null
-                                : userData._id,
-                            )
-                          }
-                          className={`badge ${getRoleBadge(userData.role)} capitalize font-semibold px-4 py-3 cursor-pointer hover:opacity-80 transition flex items-center gap-2`}
-                        >
-                          {userData.role}
-                          <FiChevronDown
-                            className={`w-4 h-4 transition-transform ${
-                              openDropdown === userData._id ? "rotate-180" : ""
-                            }`}
-                          />
-                        </button>
+                    {/* Role */}
+                    <td className="px-5 py-5">
+                      <div className="flex justify-center">
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() =>
+                              setOpenDropdown(
+                                openDropdown === userData._id
+                                  ? null
+                                  : userData._id
+                              )
+                            }
+                            className={`badge ${getRoleBadge(userData.role)} capitalize font-semibold px-4 py-3 cursor-pointer hover:opacity-80 transition flex items-center gap-2`}
+                          >
+                            {userData.role}
+                            <FiChevronDown
+                              className={`w-4 h-4 transition-transform ${
+                                openDropdown === userData._id
+                                  ? "rotate-180"
+                                  : ""
+                              }`}
+                            />
+                          </button>
 
-                        {/* dropdown */}
-                        {openDropdown === userData._id && (
-                          <div className="absolute z-50 mt-2 w-40 bg-base-100 border border-base-300 rounded-lg shadow-xl right-0">
-                            <div className="py-1">
-                              {["user", "creator", "admin"].map((role) => (
-                                <button
-                                  key={role}
-                                  onClick={() =>
-                                    handleRoleChange(
-                                      userData.email,
-                                      userData.role,
-                                      role,
-                                    )
-                                  }
-                                  className={`w-full text-left px-4 py-2 text-sm capitalize hover:bg-base-200 transition ${
-                                    userData.role === role
-                                      ? "bg-base-200 font-semibold"
-                                      : ""
-                                  }`}
-                                >
-                                  {role}
-                                  {userData.role === role && (
-                                    <span className="ml-2 text-primary">✓</span>
-                                  )}
-                                </button>
-                              ))}
+                          {/* Dropdown */}
+                          {openDropdown === userData._id && (
+                            <div className="absolute z-50 mt-2 w-40 bg-base-100 border border-base-300 rounded-lg shadow-xl right-0">
+                              <div className="py-1">
+                                {["user", "creator", "admin"].map((role) => (
+                                  <button
+                                    key={role}
+                                    onClick={() =>
+                                      handleRoleChange(
+                                        userData.email,
+                                        userData.role,
+                                        role
+                                      )
+                                    }
+                                    className={`w-full text-left px-4 py-2 text-sm capitalize hover:bg-base-200 transition ${
+                                      userData.role === role
+                                        ? "bg-base-200 font-semibold"
+                                        : ""
+                                    }`}
+                                  >
+                                    {role}
+                                    {userData.role === role && (
+                                      <span className="ml-2 text-primary">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -285,7 +385,6 @@ const ManageUsers = () => {
             <div className="flex gap-2">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                 (page) => {
-                  // Show first page, last page, current page, and pages around current
                   if (
                     page === 1 ||
                     page === totalPages ||

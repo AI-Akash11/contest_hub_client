@@ -7,9 +7,10 @@ import useRole from "../../../hooks/useRole";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import ErrorPage from "../../ErrorPage";
+import Swal from "sweetalert2";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, resetPassword } = useAuth();
   const [role] = useRole();
   const axiosSecure = useAxiosSecure();
 
@@ -25,6 +26,24 @@ const Profile = () => {
       return res.data;
     },
   });
+
+  const handleResetPassword = async () => {
+    if (!user?.email) {
+      Swal.fire("Error", "No email found", "error");
+      return;
+    }
+
+    try {
+      await resetPassword(user.email);
+      Swal.fire({
+        title: "Reset Email Sent!",
+        text: `Check your inbox (${user.email})`,
+        icon: "success",
+      });
+    } catch (error) {
+      Swal.fire("Error", error.message, "error");
+    }
+  };
 
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <ErrorPage />;
@@ -126,7 +145,7 @@ const Profile = () => {
             </div>
 
             {/* Actions */}
-            <div className="mt-8">
+            <div className="mt-8 flex gap-4 flex-col md:flex-row">
               <Link
                 to="/dashboard/update-profile"
                 className="w-full md:w-auto btn btn-primary gap-2"
@@ -134,6 +153,12 @@ const Profile = () => {
                 <FiEdit2 className="w-4 h-4" />
                 Update Profile
               </Link>
+              <button
+                onClick={handleResetPassword}
+                className="btn btn-outline btn-warning"
+              >
+                Reset Password
+              </button>
             </div>
           </div>
         </motion.div>

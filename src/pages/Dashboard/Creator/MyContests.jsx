@@ -1,30 +1,57 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import ErrorPage from "../../ErrorPage";
-import { Link } from "react-router";
-import { FiEdit2, FiTrash2, FiEye, FiClock, FiFileText } from "react-icons/fi";
-import { formatDeadline, getContestStatus } from "../../../utils";
-import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import {
+  FiCheckCircle,
+  FiXCircle,
+  FiTrash2,
+  FiEye,
+  FiFileText,
+  FiClock,
+  FiEdit2,
+} from "react-icons/fi";
+import { Link } from "react-router";
+import { formatDeadline, getContestStatus } from "../../../utils";
+import { FaCalendar, FaUser, FaUsers } from "react-icons/fa";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 const MyContests = () => {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 10;
 
+  // Fetch paginated contests
   const {
-    data: myContests = [],
+    data: myContestsData = {
+      contests: [],
+      total: 0,
+      currentPage: 1,
+      totalPages: 1,
+    },
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["my-contests", user.email],
+    queryKey: ["my-contests", user.email, currentPage],
+    enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure(`/my-contests`);
+      const res = await axiosSecure(
+        `/my-contests?page=${currentPage}&limit=${limit}`,
+      );
       return res.data;
     },
+    keepPreviousData: true,
   });
+
+  const contests = myContestsData.contests || [];
+  const totalPages = myContestsData.totalPages || 1;
 
   // Delete Mutation
   const { mutate: deleteContest } = useMutation({
@@ -68,13 +95,15 @@ const MyContests = () => {
     return badges[status] || "badge-ghost";
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-  if (isError) {
-    return <ErrorPage />;
-  }
+  if (isLoading) return <LoadingSpinner />;
+  if (isError) return <ErrorPage />;
 
   return (
     <div className="container mx-auto md:px-4 py-8">
@@ -88,17 +117,24 @@ const MyContests = () => {
         </p>
       </div>
 
-      {/* Contest Count */}
-      {myContests.length > 0 && (
-        <div className="flex justify-between items-center my-6">
-          <p className="text-sm text-base-content/70">
-            Showing <span className="font-bold text-primary">{myContests.length}</span>{" "}
-            contests
-          </p>
+      {/* Showing Info */}
+      {contests.length > 0 && (
+        <div className="mb-4 text-sm text-base-content/70">
+          Showing{" "}
+          <span className="font-semibold text-base-content">
+            {(currentPage - 1) * limit + 1}–
+            {Math.min(currentPage * limit, myContestsData.total)}
+          </span>{" "}
+          of{" "}
+          <span className="font-semibold text-base-content">
+            {myContestsData.total}
+          </span>{" "}
+          contests
         </div>
       )}
 
-      {myContests.length === 0 ? (
+      {/* Empty State */}
+      {contests.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 bg-base-200 rounded-lg">
           <FiFileText className="w-16 h-16 opacity-50 mb-4" />
           <p className="text-lg font-medium mb-4">No contests created yet</p>
@@ -108,7 +144,7 @@ const MyContests = () => {
         </div>
       ) : (
         <>
-          {/* lg screen */}
+          {/* lg screen - Table */}
           <div className="hidden lg:block overflow-x-auto">
             <div className="inline-block min-w-full shadow-lg rounded-lg overflow-hidden">
               <table className="min-w-full leading-normal">
@@ -126,7 +162,7 @@ const MyContests = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {myContests.map((contest) => {
+                  {contests.map((contest) => {
                     const contestStatus = getContestStatus(contest.deadline);
                     const canEdit = contest.status === "pending";
 
@@ -271,9 +307,9 @@ const MyContests = () => {
             </div>
           </div>
 
-          {/* mobile and tab */}
+          {/* mobile and tab - Card View */}
           <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-            {myContests.map((contest) => {
+            {contests.map((contest) => {
               const contestStatus = getContestStatus(contest.deadline);
               const canEdit = contest.status === "pending";
 
@@ -387,6 +423,63 @@ const MyContests = () => {
               );
             })}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FiChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Previous</span>
+              </button>
+
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => {
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`btn btn-sm ${
+                            currentPage === page ? "btn-primary" : "btn-outline"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (
+                      page === currentPage - 2 ||
+                      page === currentPage + 2
+                    ) {
+                      return (
+                        <span key={page} className="flex items-center px-2">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  },
+                )}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="btn btn-sm btn-outline gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <FiChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

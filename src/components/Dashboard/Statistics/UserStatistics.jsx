@@ -54,9 +54,9 @@ const UserStatistics = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
         <div className="relative bg-base-300 rounded-xl shadow-md p-6">
-          <FaListUl className="absolute top-4 right-4 w-8 h-8 text-info opacity-80" />
+          <FaListUl className="absolute top-4 right-4 w-8 h-8 text-secondary opacity-80" />
           <p className="text-sm text-base-content/60">Contests Participated</p>
-          <h3 className="text-3xl font-bold text-info">
+          <h3 className="text-3xl font-bold text-secondary">
             {contestsParticipated}
           </h3>
         </div>
