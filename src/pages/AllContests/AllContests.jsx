@@ -9,6 +9,7 @@ import ErrorPage from "../ErrorPage";
 import NotFound from "../../components/Shared/NotFound/NotFound";
 import { useSearchParams } from "react-router";
 import AllContestsError from "../../components/errorPages/AllContestsError ";
+import ContestCardSkeleton from "../../components/skeletons/ContestCardSkeleton";
 
 const AllContests = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -123,30 +124,30 @@ const AllContests = () => {
   if (isError) {
     return (
       <Container>
-      <div className="min-h-screen bg-background">
-        {/* Header - Keep visible even on error */}
-        <section className="pt-10 md:pt-15">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Explore All <span className="gradient-text">Contests</span>
-            </h1>
-            <p className="text-sm md:text-base text-base-content/70 max-w-2xl mx-auto">
-              Discover a wide range of creative competitions across various
-              categories. Find the perfect contest that matches your skills and
-              interests.
-            </p>
-          </motion.div>
-        </section>
+        <div className="min-h-screen bg-background">
+          {/* Header - Keep visible even on error */}
+          <section className="pt-10 md:pt-15">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-8"
+            >
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                Explore All <span className="gradient-text">Contests</span>
+              </h1>
+              <p className="text-sm md:text-base text-base-content/70 max-w-2xl mx-auto">
+                Discover a wide range of creative competitions across various
+                categories. Find the perfect contest that matches your skills
+                and interests.
+              </p>
+            </motion.div>
+          </section>
 
-        {/* Error Component */}
-        <AllContestsError onRetry={() => window.location.reload()} />
-      </div>
-    </Container>
-    )
+          {/* Error Component */}
+          <AllContestsError onRetry={() => window.location.reload()} />
+        </div>
+      </Container>
+    );
   }
 
   return (
@@ -277,9 +278,45 @@ const AllContests = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex justify-center items-center py-20"
+              className="pb-16"
             >
-              <span className="loading loading-spinner loading-lg text-primary"></span>
+              {/* Showing Skeleton (fake numbers to match real layout) */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <p className="text-base-content/70 text-center sm:text-left">
+                  Showing{" "}
+                  <span className="text-base-content font-semibold">1–12</span>{" "}
+                  of <span className="font-semibold">...</span> contests
+                </p>
+                {/* Status Select Skeleton */}
+                <div className="flex justify-center sm:justify-end">
+                  <div className="h-10 w-40 bg-base-300 rounded-lg animate-pulse" />
+                </div>
+              </div>
+
+              {/* Grid of Skeleton Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
+                {Array(12)
+                  .fill(0)
+                  .map((_, index) => (
+                    <ContestCardSkeleton key={index} />
+                  ))}
+              </div>
+
+              {/* Pagination Skeleton */}
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <div className="h-10 w-28 bg-base-300 rounded-lg animate-pulse" />
+                <div className="flex gap-2">
+                  {Array(5)
+                    .fill(0)
+                    .map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-10 w-10 bg-base-300 rounded-lg animate-pulse"
+                      />
+                    ))}
+                </div>
+                <div className="h-10 w-28 bg-base-300 rounded-lg animate-pulse" />
+              </div>
             </motion.div>
           ) : currentContests.length === 0 ? (
             <motion.div

@@ -43,19 +43,19 @@ const SignUp = () => {
 
       //3. Save username & profile photo
       await updateUserProfile(name, imageURL);
-      console.log(result);
+      // console.log(result);
 
       navigate(from, { replace: true });
       toast.success("Signup Successful");
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       toast.error(err?.message);
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
-      <div className="flex flex-col max-w-md p-6 rounded-md md:p-10 bg-base-200 text-base-content">
+      <div className="flex flex-col max-w-xl p-6 rounded-md md:p-10 bg-base-200 text-base-content">
         <div className="mb-8 text-center">
           <h1 className="my-3 text-4xl font-bold">Sign Up</h1>
           <p className="text-sm text-base-content/50">

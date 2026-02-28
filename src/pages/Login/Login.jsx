@@ -4,6 +4,7 @@ import useAuth from "../../hooks/useAuth";
 import { TbFidgetSpinner } from "react-icons/tb";
 import SocialLogin from "../../components/Shared/SocialLogin/SocialLogin";
 import { useForm } from "react-hook-form";
+import DemoLoginButton from "../../components/demoLogin/DemoLogin";
 
 const Login = () => {
   const { signIn, loading, user, setLoading } = useAuth();
@@ -30,26 +31,23 @@ const Login = () => {
       navigate(from, { replace: true });
       toast.success("Login Successful");
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       toast.error(err?.message);
-      reset()
-      setLoading(false)
+      reset();
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-100">
-      <div className="flex flex-col max-w-md p-6 rounded-md md:p-10 bg-base-200 text-base-content">
+      <div className="flex flex-col max-w-xl p-6 rounded-md md:p-10 bg-base-200 text-base-content">
         <div className="mb-8 text-center">
           <h1 className="my-3 text-4xl font-bold">Log In</h1>
           <p className="text-sm text-base-content/50">
             Sign in to access your account
           </p>
         </div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             {/* email */}
             <div>
@@ -126,6 +124,7 @@ const Login = () => {
           <div className="flex-1 h-px md:w-16 dark:bg-base-300"></div>
         </div>
         <SocialLogin></SocialLogin>
+
         <p className="px-6 text-sm text-center text-base-content/50">
           Don&apos;t have an account yet?{" "}
           <Link
@@ -137,6 +136,39 @@ const Login = () => {
           </Link>
           .
         </p>
+
+        {/* DEMO LOGIN BUTTONS - Placed here */}
+        <div className="mt-8 space-y-4">
+          <p className="text-sm text-center text-base-content/70">
+            Want to test the platform quickly? Use demo accounts:
+          </p>
+
+          <div className="flex flex-col gap-4 justify-center">
+            <DemoLoginButton
+              role="user"
+              email={import.meta.env.VITE_DEMO_USER_EMAIL || "demo@user.com"}
+              password={import.meta.env.VITE_DEMO_USER_PASSWORD || "123Demo!"}
+              label="Demo User Login"
+              color="primary"
+            />
+
+            <DemoLoginButton
+              role="creator"
+              email={
+                import.meta.env.VITE_DEMO_CREATOR_EMAIL || "demo@creator.com"
+              }
+              password={
+                import.meta.env.VITE_DEMO_CREATOR_PASSWORD || "123Demo!"
+              }
+              label="Demo Creator Login"
+              color="accent"
+            />
+          </div>
+
+          <p className="text-xs text-center text-base-content/60">
+            These are safe demo accounts for reviewers — no real data affected.
+          </p>
+        </div>
       </div>
     </div>
   );

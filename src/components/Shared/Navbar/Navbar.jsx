@@ -110,7 +110,7 @@ const Navbar = () => {
               <button
                 onClick={() => setIsHamburgerOpen(!isHamburgerOpen)}
                 role="button"
-                className="btn btn-outline rounded-2xl border-base-content/30 mr-2 md:hidden flex flex-col justify-center items-center gap-1.5 px-3.5 py-2"
+                className="btn btn-outline rounded-2xl border-base-content/30 mr-2 lg:hidden flex flex-col justify-center items-center gap-1.5 px-3.5 py-2"
               >
                 <motion.span
                   className="block w-5 h-0.5 bg-base-content"
@@ -173,7 +173,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="navbar-center text-base-content hidden md:flex">
+          <div className="navbar-center text-base-content hidden lg:flex">
             <ul className="font-bold px-1 menu menu-horizontal">{links}</ul>
           </div>
 

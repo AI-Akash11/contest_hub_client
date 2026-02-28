@@ -14,7 +14,7 @@ const PaymentSuccess = () => {
       });
     }
   }, [sessionId]);
-  console.log(sessionId);
+  // console.log(sessionId);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-base-200 px-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
