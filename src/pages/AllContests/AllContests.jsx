@@ -14,6 +14,7 @@ const AllContests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const hasReadUrlParams = useRef(false);
@@ -48,10 +49,10 @@ const AllContests = () => {
     isLoading: isContestsLoading,
     isError,
   } = useQuery({
-    queryKey: ["allContests", currentPage, debouncedSearch, selectedCategory],
+    queryKey: ["allContests", currentPage, debouncedSearch, selectedCategory, selectedStatus],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/all-contests?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearch}&category=${selectedCategory === "All" ? "" : selectedCategory}`,
+        `${import.meta.env.VITE_API_URL}/all-contests?page=${currentPage}&limit=${itemsPerPage}&search=${debouncedSearch}&category=${selectedCategory === "All" ? "" : selectedCategory}&status=${selectedStatus}`,
       );
       return res.data;
     },
@@ -61,10 +62,10 @@ const AllContests = () => {
   // query for categories
   const { data: categoryData = { categories: ["All"], counts: {} } } = useQuery(
     {
-      queryKey: ["contestCategories", debouncedSearch],
+      queryKey: ["contestCategories", debouncedSearch,selectedStatus],
       queryFn: async () => {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/contest-categories?search=${debouncedSearch}`,
+          `${import.meta.env.VITE_API_URL}/contest-categories?search=${debouncedSearch}&status=${selectedStatus}`,
         );
         return res.data;
       },
@@ -81,12 +82,13 @@ const AllContests = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, selectedCategory]);
+  }, [debouncedSearch, selectedCategory, selectedStatus]);
 
   const clearFilters = () => {
     setSearchQuery("");
     setDebouncedSearch("");
     setSelectedCategory("All");
+    setSelectedStatus("all");
     setCurrentPage(1);
   };
 
@@ -162,7 +164,7 @@ const AllContests = () => {
             </div>
           </motion.div>
 
-          {/* Category Slider - Static */}
+          {/* Category Slider */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -275,22 +277,41 @@ const AllContests = () => {
               exit={{ opacity: 0 }}
               className="pb-16"
             >
-              <div className="flex items-center justify-between mb-6">
-                <p className="text-base-content/70">
-                  Showing{" "}
-                  <span className="text-base-content font-semibold">
-                    {(currentPage - 1) * itemsPerPage + 1} -{" "}
-                    {Math.min(currentPage * itemsPerPage, contestData.total)}
-                  </span>{" "}
-                  of <span className="font-semibold">{contestData.total}</span>{" "}
-                  contests
-                  {searchQuery && (
-                    <span className="ml-2 text-sm">
-                      for "<span className="font-semibold">{searchQuery}</span>"
-                    </span>
-                  )}
-                </p>
-              </div>
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+  {/* Left: Showing X–Y of Z */}
+  <p className="text-base-content/70 text-center sm:text-left">
+    Showing{" "}
+    <span className="text-base-content font-semibold">
+      {(currentPage - 1) * itemsPerPage + 1} –{" "}
+      {Math.min(currentPage * itemsPerPage, contestData.total)}
+    </span>{" "}
+    of{" "}
+    <span className="font-semibold">{contestData.total}</span>{" "}
+    contests
+    {searchQuery && (
+      <span className="ml-2 text-sm">
+        for "<span className="font-semibold">{searchQuery}</span>"
+      </span>
+    )}
+  </p>
+
+  {/* Right: Status Filter Select */}
+  <div className="flex justify-center sm:justify-end">
+    <select
+      value={selectedStatus}
+      onChange={(e) => setSelectedStatus(e.target.value)}
+      className="
+        select select-bordered select-sm w-40 max-w-xs
+        bg-base-200 text-base-content border-base-content/20
+        focus:outline-primary focus:ring-2 focus:ring-primary
+      "
+    >
+      <option value="all">All Contests</option>
+      <option value="live">Live Contests</option>
+      <option value="ended">Ended Contests</option>
+    </select>
+  </div>
+</div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-4">
                 {currentContests.map((contest, index) => (
