@@ -4,7 +4,7 @@ import useRole from "../hooks/useRole";
 import LoadingSpinner from "../components/Shared/LoadingSpinner";
 
 const DashboardLayout = () => {
-  const [isRoleLoading] = useRole();
+  const [, isRoleLoading] = useRole();
 
   if (isRoleLoading) {
     return <LoadingSpinner message="Loading Dashboard..." />;
