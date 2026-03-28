@@ -1,7 +1,15 @@
 import { Outlet } from "react-router";
 import Sidebar from "../components/Dashboard/Sidebar/Sidebar";
+import useRole from "../hooks/useRole";
+import LoadingSpinner from "../components/Shared/LoadingSpinner";
 
 const DashboardLayout = () => {
+  const [isRoleLoading] = useRole();
+
+  if (isRoleLoading) {
+    return <LoadingSpinner message="Loading Dashboard..." />;
+  }
+
   return (
     <div className="relative min-h-screen md:flex bg-base-100">
       {/* Left Side: Sidebar Component */}

@@ -13,22 +13,17 @@ import AdminMenu from "./Menu/AdminMenu";
 import CreatorMenu from "./Menu/CreatorMenu";
 import UserMenu from "./Menu/UserMenu";
 import useRole from "../../../hooks/useRole";
-import LoadingSpinner from "../../Shared/LoadingSpinner";
 import { FaHome } from "react-icons/fa";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
   const [isActive, setActive] = useState(false);
-  const [role, isRoleLoading] = useRole();
+  const [role] = useRole();
 
   // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive);
   };
-
-  if (isRoleLoading) {
-    return <LoadingSpinner message="Loading Sidebar"></LoadingSpinner>;
-  }
 
   return (
     <>
